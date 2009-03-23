@@ -31,16 +31,7 @@ our $VERSION = '0.01';
 use Moose;
 
 
-use English '-no_match_vars';
-
-
-=head1 ATTRIBUTES
-
-=over
-
-=back
-
-=cut
+use Test::Mock::Class::Generator;
 
 
 use namespace::clean -except => 'meta';
@@ -50,26 +41,72 @@ use namespace::clean -except => 'meta';
 
 =over
 
-=item mock_class(I<class> : Str, I<mock_class> : Str = undef, I<methods> : ArrayRef = undef)
+=item mock_class(I<class> : Str, I<mock_class> : Str = undef, I<methods> : Array = ())
 
 Clones a class' interface and creates a mock version that can have return
 values and expectations set.
 
-I<class> is a class to clone.
+=over
 
-I<mock_class> is a new class name. Default is the old name with C<Mock::>
-prepended.
+=item I<class>
 
-I<methods> is an additional methods to add beyond those in the cloned class.
-Use this to emulate the dynamic addition of methods in the cloned class or
-when the class hasn't been written yet
+Class to clone.
+
+=item I<mock_class>
+
+New class name. Default is the old name with C<::Mock>
+appended.
+
+=item I<methods>
+
+Additional methods to add beyond those in the cloned class.  Use this to
+emulate the dynamic addition of methods in the cloned class or when the class
+hasn't been written yet.
+
+=back
 
 =cut
 
 sub mock_class {
-    my ($class, $mock_class, $methods) = @_;
-    my $generator = MockGenerator->new($class, $mock_class);
-    return $generator->generateSubclass($methods);
+    my ($self, $class, $mock_class, @methods) = @_;
+    my $generator = Test::Mock::Class::Generator->new(
+        class      => $class,
+        defined $mock_class ? (mock_class => $mock_class) : (),
+    );
+    return $generator->generate_subclass(@methods);
+};
+
+
+=item mock_class_partial(I<class> : Str, I<mock_class> : Str, I<methods> : Array)
+
+Generates a version of a class with selected methods mocked only.  Inherits
+the old class and chains the mock methods of an aggregated mock object.
+
+=over
+
+=item I<class>
+
+Class to clone.
+
+=item I<mock_class>
+
+New class name.
+
+I<methods>
+
+Methods to be overridden with mock versions.
+
+=back
+
+=cut
+
+sub mock_class_partial {
+    my ($self, $class, $mock_class, @methods) = @_;
+    my $generator = Test::Mock::Class::Generator->new(
+        class      => $class,
+        mock_class => $mock_class
+    );
+    return $generator->generate_subclass_partial(@methods);
 };
 
 
@@ -88,7 +125,13 @@ sub mock_class {
 
 = Class Diagram =
 
-[Test::Mock::Class]
+[                          <<utility>>
+                        Test::Mock::Class
+ -----------------------------------------------------------------------
+ -----------------------------------------------------------------------
+ mock_class(class : Str, mock_class : Str = undef, methods : Array = ())
+ mock_class_partial(class : Str, mock_class : Str, methods : Array)
+                                                                        ]
 
 =end umlwiki
 
