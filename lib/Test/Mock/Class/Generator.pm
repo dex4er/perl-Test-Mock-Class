@@ -33,6 +33,18 @@ use constant::boolean;
 use Class::MOP;
 use Moose::Meta::Class;
 
+use Exception::Base 'Test::Mock::Class::Exception';
+
+use Test::Mock::Class::Base;
+use Test::Mock::Class::Inspector;
+
+
+use constant {
+    Base      => 'Test::Mock::Class::Base',
+    Exception => 'Test::Mock::Class::Exception',
+    Inspector => 'Test::Mock::Class::Inspector',
+};
+
 
 =head1 ATTRIBUTES
 
@@ -71,7 +83,7 @@ Base mock class name.
 has 'mock_base' => (
     is      => 'ro',
     isa     => 'Str',
-    default => 'Test::Mock::Class::Base',
+    default => Base,
 );
 
 =item reflection : Test::Mock::Class::Reflection
@@ -82,11 +94,11 @@ Reflection API for class.
 
 =cut
 
-has 'reflection' => (
+has 'inspector' => (
     is      => 'ro',
-    isa     => 'Test::Mock::Class::Reflection',
+    isa     => Inspector,
     default => sub {
-        Test::Mock::Class::Reflection->new( class => $_[0]->class )
+        Inspector->new( class => $_[0]->class )
     },
 );
 
@@ -98,7 +110,7 @@ use namespace::clean -except => 'meta';
 
 =over
 
-=item generate(I<methods> : Array = ()) : Bool
+=item generate(I<methods> : Array = ()) : Moose::Meta::Class
 
 Clones a class' interface and creates a mock version that can have return
 values and expectations set.
@@ -115,12 +127,19 @@ class hasn't been written yet.
 
 =cut
 
-sub generate {
+sub generate_subclass {
     my ($self, @methods) = @_;
 
-    return FALSE unless Class::MOP::is_class_loaded($self->class);
-    return FALSE if Class::MOP::is_class_loaded($self->mock_class);
-    return !! $self->_create_class(@methods);
+    Exception->throw(
+        message => [ 'Class %s does not exist', $self->class ],
+    ) unless $self->inspector->class_exists;
+
+    my $mock_inspector = Inspector->new( class => $_[0]->mock_class );
+    Exception->throw(
+        message => [ 'Class %s already exists', $self->mock_class ],
+    ) if $mock_inspector->class_exists_sans_autoload;
+
+    return $self->_create_class(@methods);
 };
 
 
@@ -132,7 +151,7 @@ The new mock class code as a string.
 
 =item I<methods>
 
-Additional methods to create
+Additional methods to create.
 
 =back
 
@@ -140,15 +159,38 @@ Additional methods to create
 
 sub _create_class {
     my ($self, @methods) = @_;
-    my $metaclass = Moose::Meta::Class->create($self->mock_class);
-    if ($self->class->can('meta')) {
-        @superclasses = $self->class->meta->superclasses;
-    }
-    else {
-        @superclasses =   
+
+    my @mock_methods = do {
+        my %uniq = map { $_ => 1 }
+                   ($self->inspector->get_methods, @methods, 'new');
+        keys %uniq;
     };
+
+    my $metaclass = Moose::Meta::Class->create($self->mock_class);
+    my @metaclass_instance_roles = $self->inspector->get_metaclass_instance_roles;
+    if (@metaclass_instance_roles) {
+        Moose::Util::MetaRole::apply_metaclass_roles(
+            for_class => $self->mock_class,
+            instance_metaclass_roles => \@metaclass_instance_roles,
+        );  
+    };
+
+    $metaclass->superclasses(Base, $self->inspector->get_superclasses);
+
+    foreach my $method (@mock_methods) {
+        next if $method eq 'meta';
+        if ($method eq 'new') {
+            $self->mock_class->mock_add_constructor($method);
+        }
+        else {
+            $self->mock_class->mock_add_method($method);
+        };
+    };
+
     return $metaclass;
 };
+
+
 
 1;
 

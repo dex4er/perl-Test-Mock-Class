@@ -37,11 +37,11 @@ use Test::Mock::Class::Generator;
 use namespace::clean -except => 'meta';
 
 
-=head1 FUNCTIONS
+=head1 METHODS
 
 =over
 
-=item mock_class(I<class> : Str, I<mock_class> : Str = undef, I<methods> : Array = ())
+=item generate(I<class> : Str, I<mock_class> : Str = undef, I<methods> : Array = ())
 
 Clones a class' interface and creates a mock version that can have return
 values and expectations set.
@@ -67,7 +67,7 @@ hasn't been written yet.
 
 =cut
 
-sub mock_class {
+sub generate {
     my ($self, $class, $mock_class, @methods) = @_;
     my $generator = Test::Mock::Class::Generator->new(
         class      => $class,
@@ -108,7 +108,6 @@ sub mock_class_partial {
     );
     return $generator->generate_subclass_partial(@methods);
 };
-
 
 
 =back
