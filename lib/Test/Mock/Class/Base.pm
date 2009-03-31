@@ -89,7 +89,7 @@ sub _mock_invoke {
     return $self->_mock_emulate_call($method, $timing, @args);
 };
 
-=item _mock_emulate_call(I<method> : Str, I<timing> : Int, I<args> : Array)
+=item _mock_emulate_call(I<method> : Str, I<timing> : Int, I<args> : Array) : Any
 
 Finds the return value matching the incoming arguments. If there is no
 matching value found then an error is triggered.
@@ -99,7 +99,7 @@ matching value found then an error is triggered.
 sub _mock_emulate_call {
     my ($self, $method, $timing, @args) = @_;
 
-    my ($matching, $action) = ('action', 'value');
+    my ($matching, $action) = ('return', 'value');
 
     return unless defined $self->_mock_attribute->{$matching}{$method};
 
@@ -109,7 +109,7 @@ sub _mock_emulate_call {
 };
 
 
-=item _mock_check_expectations(I<method> : Str, I<timing> : Num, I<args> : Array)
+=item _mock_check_expectations(I<method> : Str, I<timing> : Num, I<args> : Array) : Self
 
 Tests the arguments against expectations.
 
@@ -122,13 +122,56 @@ sub _mock_check_expectations {
 
     return unless defined $self->_mock_attribute->{$matching}{$method};
 
-    $self->_mock_method_matching(
+    my $value = $self->_mock_method_matching(
         $matching, $action, $method, $timing, @args
-    ) or fail(['Wrong arguments for method (%s) at call (%d)', $method, $timing]);
+    );
+
+    fail([
+        'Wrong arguments for method (%s) at call (%d)', $method, $timing
+    ]) unless defined $value;
+    
+    return $value;
 };
 
 
-=item _mock_method_matching(I<matchings> : ArrayRef, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array)
+=item mock_tally() : Self
+
+Check the expectations at the end.
+
+=cut
+
+sub mock_tally {
+    my ($self) = @_;
+
+    return if not defined $self->_mock_attribute->{expectation}
+              or (ref $self->_mock_attribute->{expectation} || '') ne 'HASH';
+
+    foreach my $method (keys %{ $self->_mock_attribute->{expectation} }) {
+        next if not defined $self->_mock_attribute->{expectation}{$method}
+                or (ref $self->_mock_attribute->{expectation}{$method} || '') ne 'ARRAY';
+
+        foreach my $rule (@{ $self->_mock_attribute->{expectation}{$method} }) {
+            if (defined $rule->{count}) {
+                my $count = $rule->{call} || 0;
+                fail([
+                    'Expected call count (%d) for method (%s) with calls (%d)',
+                    $rule->{count}, $method, $count
+                ]) if ($count != $rule->{count});
+            };
+            if (defined $rule->{minimum}) {
+                my $count = $rule->{call} || 0;
+                fail([
+                    'Minimum call count (%d) for method (%s) with calls (%d)',
+                    $rule->{minimum}, $method, $count
+                ]) if ($count < $rule->{minimum}); 
+            };
+        };
+    };
+
+    return $self;
+};
+
+=item _mock_method_matching(I<matchings> : ArrayRef, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array) : Any
 
 Do matching for method and do some action if succeed.
 
@@ -175,14 +218,14 @@ sub _mock_method_matching {
 
         if (exists $rule->{args}) {
             my @rule_args = (ref $rule->{args} || '') eq 'ARRAY'
-                                ? @{ $rule->{args} }
-                                : ( $rule->{args} );
+                            ? @{ $rule->{args} }
+                            : ( $rule->{args} );
 
             # number of args matches?
             next unless @args == @rule_args;
 
             # iterate args
-            for (my $i=0; $i < @rule_args; $i++) {
+            foreach my $i (0 .. @rule_args - 1) {
                 my $rule_arg = $rule_args[$i];
                 if ((ref $rule_arg || '') eq 'Regexp') {
                     next RULE unless $args[$i] =~ $rule_arg;
@@ -204,8 +247,15 @@ sub _mock_method_matching {
             };
         };
 
+        $rule->{call} ++;
+
+        fail([
+            'Maximum call count (%d) for method (%s) at call (%d)',
+            $rule->{maximum}, $method, $timing
+        ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+
         if (not defined $rule->{$action}) {
-            return undef;
+            return TRUE;
         }
         elsif (ref $rule->{$action} eq 'CODE') {
             return $rule->{$action}->($method, $timing, @args);
@@ -312,13 +362,13 @@ sub mock_returns {
         message => 'Usage: $mock->mock_returns( METHOD => PARAMS )'
     ) unless defined $method;
 
-    push @{ $self->_mock_attribute->{action}{$method} } => \%params;
+    push @{ $self->_mock_attribute->{return}{$method} } => \%params;
 
     return $self;
 };
 
 
-=item mock_expect( I<method> : Str, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
+=item mock_expect( I<method> : Str, :I<at> : Int, :I<minimum> : Int, :I<maximum> : Int, :I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets up an expected call with a set of expected parameters in that call. All
 calls will be compared to these expectations regardless of when the call is
@@ -333,10 +383,16 @@ sub mock_expect {
         message => 'Usage: $mock->mock_expect( METHOD => PARAMS )'
     ) unless defined $method;
 
-    push @{ $self->_mock_attribute->{expectation}{$method} } => {
-        %params,
-        assertion => TRUE,
-    };
+#    if (defined $params{minimum} or defined $params{count}) {
+#        push @{ $self->_mock_attribute->{tally}{$method} } => {
+#            %params,
+#        };
+#    }
+#    else {
+        push @{ $self->_mock_attribute->{expectation}{$method} } => {
+            %params,
+        };
+#    };
 
     return $self;    
 };
@@ -357,7 +413,7 @@ sub mock_throw {
 
     my $exception = $params{exception} || 'Exception::Assertion';
 
-    push @{ $self->_mock_attribute->{action}{$method} } => {
+    push @{ $self->_mock_attribute->{return}{$method} } => {
         %params,
         value => sub {
             $exception->throw(
