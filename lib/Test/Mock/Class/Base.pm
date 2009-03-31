@@ -169,8 +169,8 @@ sub _mock_method_matching {
 
     RULE:
     foreach my $rule (@{ $self->_mock_attribute->{$matching}{$method} }) {
-        if ($rule->{timing}) {
-            next unless $timing == $rule->{timing};
+        if ($rule->{at}) {
+            next unless $timing == $rule->{at};
         };
 
         if (exists $rule->{args}) {
@@ -252,7 +252,7 @@ sub mock_add_constructor {
     return $self;
 };
 
-=item mock_returns( I<method> : Str, :I<value> : Any, :I<timing> : Int, :I<args> : ArrayRef[Any] ) : Self
+=item mock_returns( I<method> : Str, :I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets a return for a parameter list that will be passed on by call to this
 method that match.
@@ -279,13 +279,13 @@ and original arguments as arguments.
       value => sub { qw{one two three}[ $_[1]-1 ] }
   ) );
 
-=item timing
+=item at
 
 Value is returned only for current timing.
 
-  $m->mock_returns( sequence => ( timing => 1, value => 'one' ) );
-  $m->mock_returns( sequence => ( timing => 2, value => 'two' ) );
-  $m->mock_returns( sequence => ( timing => 3, value => 'three' ) );
+  $m->mock_returns( sequence => ( at => 1, value => 'one' ) );
+  $m->mock_returns( sequence => ( at => 2, value => 'two' ) );
+  $m->mock_returns( sequence => ( at => 3, value => 'three' ) );
 
 =item args
 
@@ -318,7 +318,7 @@ sub mock_returns {
 };
 
 
-=item mock_expect( I<method> : Str, :I<timing> : Int, :I<args> : ArrayRef[Any] ) : Self
+=item mock_expect( I<method> : Str, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets up an expected call with a set of expected parameters in that call. All
 calls will be compared to these expectations regardless of when the call is
@@ -342,7 +342,7 @@ sub mock_expect {
 };
 
 
-=item mock_throw( I<method> : Str, :I<timing> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any] ) : Self
+=item mock_throw( I<method> : Str, :I<at> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any] ) : Self
 
 Sets up a trigger to throw an exception upon the method call.
 
