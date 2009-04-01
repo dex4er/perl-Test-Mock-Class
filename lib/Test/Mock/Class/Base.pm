@@ -368,6 +368,23 @@ sub mock_returns {
 };
 
 
+=item mock_returns_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Convenience method for returning a value upon the method call.
+
+=cut
+
+sub mock_returns_at {
+    my ($self, $at, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_returns_at( AT, METHOD => PARAMS )'
+    ) unless defined $at and defined $method;
+
+    return $self->mock_returns( $method => %params, at => $at );
+};
+
+
 =item mock_expect( I<method> : Str, :I<at> : Int, :I<minimum> : Int, :I<maximum> : Int, :I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets up an expected call with a set of expected parameters in that call. All
@@ -378,23 +395,137 @@ made.
 
 sub mock_expect {
     my ($self, $method, %params) = @_;
-
+    
     Exception::Argument->throw(
         message => 'Usage: $mock->mock_expect( METHOD => PARAMS )'
     ) unless defined $method;
 
-#    if (defined $params{minimum} or defined $params{count}) {
-#        push @{ $self->_mock_attribute->{tally}{$method} } => {
-#            %params,
-#        };
-#    }
-#    else {
-        push @{ $self->_mock_attribute->{expectation}{$method} } => {
-            %params,
-        };
-#    };
+    push @{ $self->_mock_attribute->{expectation}{$method} } => {
+        %params,
+    };
 
     return $self;    
+};
+
+
+=item mock_expect_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Sets up an expected call with a set of expected parameters in that call.
+
+=cut
+
+sub mock_expect_at {
+    my ($self, $at, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_at( AT, METHOD => PARAMS )'
+    ) unless defined $at and defined $method;
+
+    return $self->mock_expect( $method => %params, at => $at );
+};
+
+
+=item mock_expect_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
+
+Sets an expectation for the number of times a method will be called. The
+C<mock_tally> method have to be used to check this.
+
+=cut
+
+sub mock_expect_call_count {
+    my ($self, $method, $count, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_call_count( METHOD, COUNT => PARAMS )'
+    ) unless defined $method and defined $count;
+
+    return $self->mock_expect( $method => %params, count => $count );
+};
+
+
+=item mock_expect_maximum_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
+
+Sets the number of times a method may be called before a test failure is
+triggered.
+
+=cut
+
+sub mock_expect_maximum_call_count {
+    my ($self, $method, $count, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_maximum_call_count( METHOD, COUNT => PARAMS )'
+    ) unless defined $method and defined $count;
+
+    return $self->mock_expect( $method => %params, maximum => $count );
+};
+
+
+=item mock_expect_minimum_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
+
+Sets the number of times to call a method to prevent a failure on the tally.
+
+=cut
+
+sub mock_expect_minimum_call_count {
+    my ($self, $method, $count, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_minimum_call_count( METHOD, COUNT => PARAMS )'
+    ) unless defined $method and defined $count;
+
+    return $self->mock_expect( $method => %params, minimum => $count );
+};
+
+
+=item mock_expect_never( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Convenience method for barring a method call.
+
+=cut
+
+sub mock_expect_never {
+    my ($self, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_never( METHOD => PARAMS )'
+    ) unless defined $method;
+
+    return $self->mock_expect( $method => %params, maximum => 0 );
+};
+
+
+=item mock_expect_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Convenience method for a single method call.
+
+=cut
+
+sub mock_expect_once {
+    my ($self, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_once( METHOD => PARAMS )'
+    ) unless defined $method;
+
+    return $self->mock_expect( $method => %params, count => 1 );
+};
+
+
+=item mock_expect_at_least_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Convenience method for requiring a method call.
+
+=cut
+
+sub mock_expect_at_least_once {
+    my ($self, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_expect_at_least_once( METHOD => PARAMS )'
+    ) unless defined $method;
+
+    return $self->mock_expect( $method => %params, minimum => 1 );
 };
 
 
@@ -424,6 +555,23 @@ sub mock_throw {
     };
 
     return $self;    
+};
+
+
+=item mock_throw_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+
+Convenience method for throwing an error upon the method call.
+
+=cut
+
+sub mock_throw_at {
+    my ($self, $at, $method, %params) = @_;
+    
+    Exception::Argument->throw(
+        message => 'Usage: $mock->mock_throw_at( AT, METHOD => PARAMS )'
+    ) unless defined $at and defined $method;
+
+    return $self->mock_throw( $method => %params, at => $at );
 };
 
 
