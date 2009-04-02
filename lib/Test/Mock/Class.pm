@@ -9,7 +9,7 @@ Test::Mock::Class - Simulating other classes
 =head1 SYNOPSIS
 
   use Test::Mock::Class ':all';
-  mock_class 'Net::FTP' => 'Mock::Net::FTP';
+  mock_class 'Net::FTP' => 'Net::FTP::Mock';
 
 =head1 DESCRIPTION
 

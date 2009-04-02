@@ -10,6 +10,28 @@ Test::Mock::Class::Generator - Code generation of mock objects
 
   use Test::Mock::Class::Generator;
 
+  # generate mock class which mimics existsing class
+  Test::Mock::Class::Generator->new(
+      class => 'Net::FTP',
+      mock_class => 'Net::FTP::Mock',
+  )->generate;
+
+  # generate mock class with only one method overridden 
+  Test::Mock::Class::Generator->generate(
+      class => 'File::Stat::Moose',
+      mock_class => 'File::Stat:Moose::Mock',
+  )->generate('stat');
+
+  # generate new empty mock class with some new methods
+  Test::Mock::Class::Generator->generate(
+      mock_class => 'My::Handler::Mock',
+  )->generate('start_tag', 'end_tag');
+
+  # create new mock object
+  my $obj = Test::Mock::Class::Generator->new(
+      class => 'IO::File',
+  )->generate->new; 
+
 =head1 DESCRIPTION
 
 Service class for code generation of mock objects.
@@ -110,7 +132,7 @@ use namespace::clean -except => 'meta';
 
 =over
 
-=item generate(I<methods> : Array = ()) : Moose::Meta::Class
+=item generate(I<methods> : Array = ()) : Str
 
 Clones a class' interface and creates a mock version that can have return
 values and expectations set.
@@ -119,7 +141,7 @@ values and expectations set.
 
 =item I<methods>
 
-Additional methods to add beyond those in th cloned class. Use this to
+Additional methods to add beyond those in the cloned class. Use this to
 emulate the dynamic addition of methods in the cloned class or when the
 class hasn't been written yet.
 
@@ -127,7 +149,7 @@ class hasn't been written yet.
 
 =cut
 
-sub generate_subclass {
+sub generate {
     my ($self, @methods) = @_;
 
     Exception->throw(
@@ -139,7 +161,8 @@ sub generate_subclass {
         message => [ 'Class %s already exists', $self->mock_class ],
     ) if $mock_inspector->class_exists_sans_autoload;
 
-    return $self->_create_class(@methods);
+    my $meta = $self->_create_class(@methods);
+    return $meta->name;
 };
 
 
