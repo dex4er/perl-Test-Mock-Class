@@ -79,6 +79,65 @@ with 'Test::Mock::Class::Role::Meta::Class';
 use namespace::clean -except => 'meta';
 
 
+=head1 FUNCTIONS
+
+=over
+
+=cut
+
+BEGIN {
+    my %exports = ();
+
+=item mock_class(I<class> : Str, I<mock_class> : Str = undef) : Str
+
+Creates mock class based on original I<class>.  If the name of I<mock_class>
+is undefined, its name is created based on name of original I<class> with
+added C<::Mock> suffix.
+
+The function returns the name of new I<mock_class>.
+
+=back
+
+=cut
+
+    $exports{mock_class} = sub {
+        sub ($;$) {
+            my $generator = __PACKAGE__->new(
+                class => $_[0],
+                mock_class => defined $_[1] ? $_[1] : $_[0] . '::Mock',
+            );
+return $generator->generate;
+        };
+    };
+
+=head1 IMPORTS
+
+=over
+
+=cut
+
+    my %groups = ();
+
+=item Test::Mock::Class ':all';
+
+Imports all functions into caller's namespace.
+
+=back
+
+=cut
+
+    $groups{all} = [ keys %exports ];
+
+    require Sub::Exporter;
+    Sub::Exporter->import(
+        -setup => {
+            exports => [ %exports ],
+            groups => \%groups,
+        },
+    );
+};
+
+
 1;
 
 

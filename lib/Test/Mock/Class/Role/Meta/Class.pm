@@ -26,62 +26,79 @@ our $VERSION = '0.01';
 use Moose::Role;
 
 
-use constant::boolean;
+#use constant::boolean;
+use Class::Inspector;
+use Symbol;
+
+
+use namespace::clean -except => 'meta';
+
 
 use Smart::Comments;
 
 
 sub create_mock_class {
-### create_mock_class: @_
     my ($class, $name, %args) = @_;
+    my $self = $class->create($name, %args);
+    $self->_construct_mock_class(%args);
+    return $self;
+};
 
-    if (defined $args{class}) {    
-        $class->throw_error("Class ($class) does not exist")
-            unless $class->_does_class_exist($class);
-        if (not $args{class}->can('meta')) {
-            Moose::Meta::Class->initialize($args{class});  
-        };
+
+sub create_mock_anon_class {
+    my ($class, %args) = @_;
+    my $self = $class->create_anon_class;
+    $self->_construct_mock_class(%args);
+    return $self;
+};
+
+
+sub _construct_mock_class {
+    my ($self, %args) = @_;
+
+    if (defined $args{class}) {
+        Class::MOP::load_class($args{class});
+        $self->superclasses(
+            $self->_get_mock_superclasses($args{class}),
+        );
     };
+
+    my @metaclass_instance_roles = $self->_get_mock_metaclass_instance_roles($args{class});
+### @metaclass_instance_roles
+    if (@metaclass_instance_roles) {
+        Moose::Util::MetaRole::apply_metaclass_roles(
+            for_class => $self->name,
+            instance_metaclass_roles => \@metaclass_instance_roles,
+        );  
+    };
+
+    Moose::Util::MetaRole::apply_base_class_roles(
+        for_class => $self->name,
+        roles => [ 'Test::Mock::Class::Role::Object' ],
+    );
 
     my @methods = defined $args{methods} ? @{ $args{methods} } : ();
 
     my @mock_methods = do {
         my %uniq = map { $_ => 1 }
                    (
-                       defined $args{class} ? $args{class}->meta->get_all_method_names : (),
+                       $self->_get_mock_methods($args{class}),
                        @methods, 'new'
                    );
         keys %uniq;
     };
 
-    my $metaclass = defined $name
-                    ? $class->create($name)
-                    : $class->create_anon_class;
-
-    my @metaclass_instance_roles = $class->_get_metaclass_instance_roles($args{class});
-    if (@metaclass_instance_roles) {
-        Moose::Util::MetaRole::apply_metaclass_roles(
-            for_class => $metaclass->name,
-            instance_metaclass_roles => \@metaclass_instance_roles,
-        );  
-    };
-
-    $metaclass->superclasses(
-        'Test::Mock::Class::Base',
-        defined $args{class} ? $args{class}->meta->superclasses : (),
-    );
-
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
         if ($method eq 'new') {
-            $metaclass->add_mock_constructor($method);
+            $self->add_mock_constructor($method);
         }
         else {
-            $metaclass->add_mock_method($method);
+            $self->add_mock_method($method);
         };
     };
 
-    return $metaclass;
+    return $self;
 };
 
 
@@ -108,22 +125,25 @@ sub add_mock_constructor {
 };
 
 
-sub _does_class_exist {
+sub _get_mock_methods {
     my ($self, $class) = @_;
-    eval {
-        Class::MOP::load_class($class);
-    };
-    return $self->_is_class_loaded($class);
+
+    return $class->can('meta')
+           ? $class->meta->get_all_method_names
+           : @{ Class::Inspector->methods($class) };
 };
 
 
-sub _is_class_loaded {
+sub _get_mock_superclasses {
     my ($self, $class) = @_;
-    return Class::MOP::is_class_loaded($class);
+
+    return $class->can('meta')
+           ? $class->meta->superclasses
+           : @{ *{Symbol::qualify_to_ref($class . '::ISA')} };
 };
 
 
-sub _get_metaclass_instance_roles {
+sub _get_mock_metaclass_instance_roles {
     my ($self, $class) = @_;
 
     return () unless defined $class;    

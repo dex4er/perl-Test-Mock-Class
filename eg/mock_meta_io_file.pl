@@ -9,11 +9,13 @@ use constant::boolean;
 use Test::Mock::Class ':all';
 use Test::Assert ':all';
 
-my $mock = Test::Mock::Class->create_mock_class( 'IO::File::Mock', class => 'IO::File' );
+use Smart::Comments;
 
-die $mock;
+my $mock = Test::Mock::Class->create_mock_anon_class( class => 'IO::File' );
 
 my $io = $mock->new_object;
+
+### $io
 
 $io->mock_returns( open => ( args => [qr//, 'r'], value => TRUE ) );
 $io->mock_returns( open => ( args => [qr//, 'w'], value => undef ) );

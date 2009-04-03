@@ -1,10 +1,10 @@
 #!/usr/bin/perl -c
 
-package Test::Mock::Class::Base;
+package Test::Mock::Class::Role::Object;
 
 =head1 NAME
 
-Test::Mock::Class::Base - Base class for mocked class
+Test::Mock::Class::Role::Object - Base class for mocked class
 
 =head1 SYNOPSIS
 
@@ -32,7 +32,7 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use Moose;
+use Moose::Role;
 
 
 use constant::boolean;
