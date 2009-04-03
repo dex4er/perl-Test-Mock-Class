@@ -10,12 +10,54 @@ Test::Mock::Class - Simulating other classes
 
   use Test::Mock::Class ':all';
   mock_class 'Net::FTP' => 'Net::FTP::Mock';
+  my $mock_object = Net::FTP::Mock->new;
+
+  # anonymous mocked class
+  my $generator = Test::Mock::Class->new( class => 'Net::FTP' );
+  my $mock_class = $generator->generate;
+  my $mock_object = $mock_class->new;
 
 =head1 DESCRIPTION
 
 In a unit test, mock objects can simulate the behavior of complex, real
 (non-mock) objects and are therefore useful when a real object is impractical
 or impossible to incorporate into a unit test.
+
+The unique features of C<Test::Mock::Class>:
+
+=over
+
+=item *
+
+It's API is inspired by PHP SimpleTest framework.
+
+=item *
+
+It isn't tied with L<Test::Builder> so it can be used standalone or with
+xUnit-like framework, i.e. L<Test::Unit::Lite>.
+
+=item *
+
+The mock classes are C<Class::MOP> based so they're easly expandable and have
+introspection capability.
+
+=item *
+
+Mocks as actors: The mock version of a class has all the methods of the
+original class.  The return value will be C<undef>, but it can be changed with
+C<mock_returns> method.
+
+=item *
+
+Mocks as critics: The method of mock version of a class can check its calling
+arguments and throws an exception if arguments don't match (C<mock_expect>
+method).  An exception also can be thrown if the method wasn't called at all
+(C<mock_expect_once> method).
+
+=back
+
+All mock classes have L<Test::Mock::Class::Base> as their base class.  This
+class provides API for extending mock classes and adding special assertions.
 
 =for readme stop
 
@@ -80,7 +122,7 @@ has 'mock_class' => (
 
 =item mock_metaclass : Moose::Meta::Class
 
-Metaclass for mocked class.
+Metaclass for mock class.
 
 =cut
 
@@ -91,7 +133,7 @@ has 'mock_metaclass' => (
 
 =item methods : ArrayRef[Str]
 
-List of methods which are created for mocked class.
+List of methods which are created for mock class.
 
 =cut
 
@@ -130,7 +172,7 @@ has 'inspector' => (
 
 =item mock_inspector : Test::Mock::Class::Inspector
 
-Reflection API for mocked class.
+Reflection API for mock class.
 
 =back
 
@@ -149,14 +191,75 @@ has 'mock_inspector' => (
 use namespace::clean -except => 'meta';
 
 
+=head1 FUNCTIONS
+
+=over
+
+=cut
+
+BEGIN {
+    my %exports = ();
+
+=item mock_class(I<class> : Str, I<mock_class> : Str = undef) : Str
+
+Creates mock class based on original I<class>.  If the name of I<mock_class>
+is undefined, its name is created based on name of original I<class> with
+added C<::Mock> suffix.
+
+The function returns the name of new I<mock_class>.
+
+=back
+
+=cut
+
+    $exports{mock_class} = sub {
+        sub ($;$) {
+            my $generator = __PACKAGE__->new(
+                class => $_[0],
+                mock_class => defined $_[1] ? $_[1] : $_[0] . '::Mock',
+            );
+            return $generator->generate;  
+        };  
+    };
+
+=head1 IMPORTS
+
+=over
+
+=cut
+
+    my %groups = ();
+
+=item Test::Mock::Class ':all';
+
+Imports all functions into caller's namespace.
+
+=back
+
+=cut
+
+    $groups{all} = [ keys %exports ];
+
+    require Sub::Exporter;
+    Sub::Exporter->import(
+        -setup => {
+            exports => [ %exports ],
+            groups => \%groups,
+        },
+    );
+};
+
+
 =head1 METHODS
 
 =over
 
 =item generate(I<>) : ClassName
 
-Clones a class' interface and creates a mock version that can have return
-values and expectations set.
+Clones an interface of original class and creates a mock version that can have
+return values and expectations set.
+
+The method returns a class name of mock version.
 
 =back
 
@@ -258,11 +361,33 @@ sub _create_class {
 
 =head1 SEE ALSO
 
+L<Test::MockObject>, L<Test::MockClass>.
+
+=back
+
 L<Moose::Meta::Class>.
 
 =head1 BUGS
 
 The API is not stable yet and can be changed in future.
+
+=head1 TODO
+
+=over
+
+=item *
+
+Support for L<Moose::Role> based classes.
+
+=item *
+
+Better documentation.
+
+=item *
+
+More tests.
+
+=back
 
 =for readme continue
 

@@ -16,7 +16,7 @@ Test::Mock::Class::Inspector - Introspection for mock objects
 
 =head1 DESCRIPTION
 
-Reflection API.
+This is utility class for inspection other classes.
 
 =for readme stop
 
@@ -80,7 +80,7 @@ sub class_exists {
 
 =item class_exists_sans_autoload : Bool
 
-Checks that a class does exist. Does not autoload the class.
+Checks that a class does exist.  Does not autoload the class.
 
 =cut
 
@@ -99,16 +99,9 @@ Finds the parent class name.
 sub get_superclasses {
     my ($self) = @_;
 
-    my @parent;
-
-    if ($self->class->can('meta')) {
-        @parent = $self->class->meta->superclasses;
-    }
-    else {
-        @parent = @{ *{Symbol::qualify_to_ref($self->class . '::ISA')} };
-    };
-
-    return @parent;
+    return $self->class->can('meta')
+                 ? $self->class->meta->superclasses
+                 : @{ *{Symbol::qualify_to_ref($self->class . '::ISA')} };
 };
 
 sub get_metaclass_instance_roles {
@@ -133,17 +126,10 @@ Gets the list of methods on a class, including superclasses.
 
 sub get_methods {
     my ($self) = @_;
-      
-    my @methods;
-
-    if ($self->class->can('meta')) {
-        @methods = $self->class->meta->get_all_method_names;
-    }
-    else {
-        @methods = Class::Inspector->methods($self->class);
-    };
-
-    return @methods;
+    
+    return $self->class->can('meta')
+           ? $self->class->meta->get_all_method_names
+           : @{ Class::Inspector->methods($self->class) };
 };
 
 1;
