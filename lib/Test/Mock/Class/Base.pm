@@ -254,16 +254,15 @@ sub _mock_method_matching {
             $rule->{maximum}, $method, $timing
         ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
 
-        if (not defined $rule->{$action}) {
-            return TRUE;
-        }
-        elsif (ref $rule->{$action} eq 'CODE') {
+        if (ref $rule->{$action} eq 'CODE') {
             return $rule->{$action}->($method, $timing, @args);
         }
-        else {
+        elsif (defined $rule->{$action}) {
             return $rule->{$action};
         };
     };
+
+    return undef;
 };
 
 
