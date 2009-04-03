@@ -106,7 +106,7 @@ The function returns the name of new I<mock_class>.
                 class => $_[0],
                 mock_class => defined $_[1] ? $_[1] : $_[0] . '::Mock',
             );
-return $generator->generate;
+            return $generator->generate;
         };
     };
 

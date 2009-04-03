@@ -12,14 +12,16 @@ use Test::Assert ':all';
 use Smart::Comments;
 
 my $mock = Test::Mock::Class->create_mock_anon_class( class => 'IO::File' );
+$mock->add_mock_return( open => ( args => [qr//, 'r'], value => TRUE ) );
+$mock->add_mock_return( open => ( args => [qr//, 'w'], value => undef ) );
+$mock->add_mock_return_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
+
+## $mock
 
 my $io = $mock->new_object;
 
 ### $io
 
-$io->mock_returns( open => ( args => [qr//, 'r'], value => TRUE ) );
-$io->mock_returns( open => ( args => [qr//, 'w'], value => undef ) );
-$io->mock_returns_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
 
 # ok
 assert_true( $io->open('/etc/passwd', 'r') );
