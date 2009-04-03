@@ -93,11 +93,6 @@ sub _construct_mock_class {
         );  
     };
 
-    Moose::Util::MetaRole::apply_base_class_roles(
-        for_class => $self->name,
-        roles => [ 'Test::Mock::Class::Role::Object' ],
-    );
-
     my @methods = defined $args{methods} ? @{ $args{methods} } : ();
 
     my @mock_methods = do {
