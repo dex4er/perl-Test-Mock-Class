@@ -102,11 +102,10 @@ The function returns the name of new I<mock_class>.
 
     $exports{mock_class} = sub {
         sub ($;$) {
-            my $generator = __PACKAGE__->new(
+            return Test::Mock::Class->create_mock_class(
+                defined $_[1] ? $_[1] : $_[0] . '::Mock',
                 class => $_[0],
-                mock_class => defined $_[1] ? $_[1] : $_[0] . '::Mock',
             );
-            return $generator->generate;
         };
     };
 

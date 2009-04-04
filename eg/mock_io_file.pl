@@ -9,13 +9,13 @@ use constant::boolean;
 use Test::Mock::Class ':all';
 use Test::Assert ':all';
 
-mock_class 'IO::File';
+mock_class 'IO::Moose::File' => 'IO::File::Mock';
+
+IO::File::Mock->meta->add_mock_return_value( open => ( args => [qr//, 'r'], value => TRUE ) );
+IO::File::Mock->meta->add_mock_return_value( open => ( args => [qr//, 'w'], value => undef ) );
+IO::File::Mock->meta->add_mock_return_value_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
 
 my $io = IO::File::Mock->new;
-
-$io->mock_returns( open => ( args => [qr//, 'r'], value => TRUE ) );
-$io->mock_returns( open => ( args => [qr//, 'w'], value => undef ) );
-$io->mock_returns_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
 
 # ok
 assert_true( $io->open('/etc/passwd', 'r') );
