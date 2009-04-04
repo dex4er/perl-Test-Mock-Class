@@ -70,7 +70,8 @@ use warnings;
 
 our $VERSION = '0.01';
 
-use Moose;
+use Moose 0.56;
+use Class::MOP 0.77;
 
 extends 'Moose::Meta::Class';
 with 'Test::Mock::Class::Role::Meta::Class';
