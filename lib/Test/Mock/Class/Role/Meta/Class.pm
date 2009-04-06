@@ -4,15 +4,11 @@ package Test::Mock::Class::Role::Meta::Class;
 
 =head1 NAME
 
-Test::Mock::Class::Role::Meta::Class - Simulating other classes
-
-=head1 SYNOPSIS
-
-...
+Test::Mock::Class::Role::Meta::Class - Metaclass for mock class
 
 =head1 DESCRIPTION
 
-...
+This role provides an API for defining and changing behavior of mock class.
 
 =cut
 
@@ -26,7 +22,6 @@ our $VERSION = '0.01';
 use Moose::Role;
 
 
-#use constant::boolean;
 use Class::Inspector;
 use Symbol;
 
@@ -105,13 +100,6 @@ sub mock_reinitialize {
 
 sub _construct_mock_class {
     my ($self, %args) = @_;
-
-#    if (my @metaclass_instance_roles = $self->_get_mock_metaclass_instance_roles($args{class})) {
-#        Moose::Util::MetaRole::apply_metaclass_roles(
-#            for_class => $self->name,
-#            instance_metaclass_roles => \@metaclass_instance_roles,
-#        );  
-#    };
 
     if (defined $args{class}) {
         $self->superclasses(

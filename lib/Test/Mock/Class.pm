@@ -70,7 +70,23 @@ our $VERSION = '0.01';
 use Moose 0.56;
 use Class::MOP 0.77;
 
+
+=head1 INHERITANCE
+
+=over
+
+=item extends L<Moose::Meta::Class>
+
+=cut
+
 extends 'Moose::Meta::Class';
+
+=item with L<Test::Mock::Class::Role::Meta::Class>
+
+=back
+
+=cut
+
 with 'Test::Mock::Class::Role::Meta::Class';
 
 
