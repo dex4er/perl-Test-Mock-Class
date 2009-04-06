@@ -713,19 +713,13 @@ sub _mock_check_expectations {
     assert_not_null($method) if ASSERT;
     assert_not_null($timing) if ASSERT;
 
-    my $value = $self->_mock_method_matching(
+    return $self->_mock_method_matching(
         attribute => '_mock_expectation',
         action    => 'assertion',
         method    => $method,
         timing    => $timing,
         args      => \@args,
     );
-
-    fail([
-        'Wrong arguments for method (%s) at call (%d)', $method, $timing
-    ]) unless defined $value;
-
-    return $value;
 };
 
 
@@ -828,6 +822,11 @@ sub _mock_method_matching {
             return $rule->{$args{action}};
         };
     };
+
+    fail([
+        'Wrong arguments for method (%s) at call (%d)',
+        $args{method}, $args{timing}
+    ]) if $args{attribute} eq '_mock_expectation';
 
     return;
 };
