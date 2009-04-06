@@ -554,7 +554,7 @@ sub _mock_reinitialize {
             );
 
             $new_self->$_( $new_meta->$_ )
-                for qw( constructor_class destructor_class error_class );
+                foreach qw{constructor_class destructor_class error_class};
 
             %$self = %$new_self;
             bless $self, ref $new_self;
@@ -598,7 +598,10 @@ sub _construct_mock_class {
 
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
-        if ($method eq 'new') {
+        if ($method =~ /^(DEMOLISHALL|DESTROY)$/) {
+            # ignore
+        }
+        elsif ($method eq 'new') {
             $self->add_mock_constructor($method);
         }
         else {

@@ -133,7 +133,7 @@ The function returns the metaobject of new mock class.
 =cut
 
     $exports{mock_anon_class} = sub {
-        sub ($;$) {
+        sub ($) {
             return Test::Mock::Class->create_mock_anon_class(
                 class => $_[0],
             );
