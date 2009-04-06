@@ -97,7 +97,7 @@ The method takes additional arguments:
 =item class
 
 Optional L<class> parameter is a name of original class and its methods will
-be created for new mock class. 
+be created for new mock class.
 
 =item methods
 
@@ -128,7 +128,7 @@ sub create_mock_class {
 
 Creates new L<Moose::Meta::Class> object which represents anonymous mock
 class.  Optional L<class> parameter is a name of original class and its
-methods will be created for new mock class. 
+methods will be created for new mock class.
 
 Anonymous classes are destroyed once the metaclass they are attached to goes
 out of scope.
@@ -178,7 +178,7 @@ sub add_mock_method {
 Adds new constructor to mock class.  This is almost the same as
 C<add_mock_method> but it returns new object rather than defined value.
 
-The calls counter is set to C<1> for new object's constructor. 
+The calls counter is set to C<1> for new object's constructor.
 
 =cut
 
@@ -230,7 +230,7 @@ sub mock_tally {
                 fail([
                     'Minimum call count (%d) for method (%s) with calls (%d)',
                     $rule->{minimum}, $method, $count
-                ]) if ($count < $rule->{minimum}); 
+                ]) if ($count < $rule->{minimum});
             };
         };
     };
@@ -314,7 +314,7 @@ Convenience method for returning a value upon the method call.
 
 sub add_mock_return_value_at {
     my ($self, $at, $method, %params) = @_;
-    
+
     $self->throw_error(
         message => 'Usage: $mock->meta->add_mock_return_value_at( AT, METHOD => PARAMS )'
     ) unless defined $at and defined $method;
@@ -332,7 +332,7 @@ takes the same arguments as C<add_mock_return_value>.
 
 sub add_mock_exception {
     my ($self, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_exception( METHOD => PARAMS )'
     ) unless defined $method;
@@ -344,13 +344,13 @@ sub add_mock_exception {
         %params,
         value => sub {
             $exception->throw(
-                message => ['Throw on method (%s)', $method], 
+                message => ['Throw on method (%s)', $method],
                 %params
             )
         },
     };
 
-    return $self;    
+    return $self;
 };
 
 
@@ -362,7 +362,7 @@ Convenience method for throwing an error upon the method call.
 
 sub add_mock_exception_at {
     my ($self, $at, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_exception_at( AT, METHOD => PARAMS )'
     ) unless defined $at and defined $method;
@@ -381,7 +381,7 @@ made.  The method takes the same arguments as C<add_mock_return_value>.
 
 sub add_mock_expectation {
     my ($self, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation( METHOD => PARAMS )'
     ) unless defined $method;
@@ -391,7 +391,7 @@ sub add_mock_expectation {
         %params,
     };
 
-    return $self;    
+    return $self;
 };
 
 
@@ -403,7 +403,7 @@ Sets up an expected call with a set of expected parameters in that call.
 
 sub add_mock_expectation_at {
     my ($self, $at, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_at( AT, METHOD => PARAMS )'
     ) unless defined $at and defined $method;
@@ -421,7 +421,7 @@ C<mock_tally> method have to be used to check this.
 
 sub add_mock_expectation_call_count {
     my ($self, $method, $count, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_call_count( METHOD, COUNT => PARAMS )'
     ) unless defined $method and defined $count;
@@ -439,7 +439,7 @@ triggered.
 
 sub add_mock_expectation_maximum_call_count {
     my ($self, $method, $count, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_maximum_call_count( METHOD, COUNT => PARAMS )'
     ) unless defined $method and defined $count;
@@ -456,7 +456,7 @@ Sets the number of times to call a method to prevent a failure on the tally.
 
 sub add_mock_expectation_minimum_call_count {
     my ($self, $method, $count, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_minimum_call_count( METHOD, COUNT => PARAMS )'
     ) unless defined $method and defined $count;
@@ -473,7 +473,7 @@ Convenience method for barring a method call.
 
 sub add_mock_expectation_never {
     my ($self, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_never( METHOD => PARAMS )'
     ) unless defined $method;
@@ -490,7 +490,7 @@ Convenience method for a single method call.
 
 sub add_mock_expectation_once {
     my ($self, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_once( METHOD => PARAMS )'
     ) unless defined $method;
@@ -507,7 +507,7 @@ Convenience method for requiring a method call.
 
 sub add_mock_expectation_at_least_once {
     my ($self, $method, %params) = @_;
-    
+
     Exception::Argument->throw(
         message => 'Usage: $mock->meta->add_mock_expectation_at_least_once( METHOD => PARAMS )'
     ) unless defined $method;
@@ -543,9 +543,9 @@ sub _mock_reinitialize {
 
             %$self = %$new_self;
             bless $self, ref $new_self;
-     
+
             Class::MOP::store_metaclass_by_name( $self->name, $self );
-            Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;       
+            Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;
         };
     };
 
@@ -619,7 +619,7 @@ sub _get_mock_superclasses {
 sub _get_mock_metaclasses {
     my ($self, $class) = @_;
 
-    return () unless defined $class;    
+    return () unless defined $class;
     return () unless $class->can('meta');
 
     return (
@@ -633,11 +633,11 @@ sub _get_mock_metaclasses {
 sub _get_mock_metaclass_instance_roles {
     my ($self, $class) = @_;
 
-    return () unless defined $class;    
+    return () unless defined $class;
     return () unless $class->can('meta');
 
     my $metaclass_instance = $class->meta->get_meta_instance->meta;
-    
+
     return () unless $metaclass_instance->can('roles');
 
     return map { $_->name }
@@ -727,7 +727,7 @@ sub _mock_check_expectations {
     fail([
         'Wrong arguments for method (%s) at call (%d)', $method, $timing
     ]) unless defined $value;
-    
+
     return $value;
 };
 

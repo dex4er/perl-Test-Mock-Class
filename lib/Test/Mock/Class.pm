@@ -39,7 +39,7 @@ xUnit-like framework, i.e. L<Test::Unit::Lite>.
 =item *
 
 The API for defining mock objects behavior is based on L<Class::MOP> so it
-doesn't clash with API of original objects and is easy expandable. 
+doesn't clash with API of original objects and is easy expandable.
 
 =item *
 
