@@ -33,13 +33,13 @@ It's API is inspired by PHP SimpleTest framework.
 
 =item *
 
-It isn't tied with L<Test::Builder> so it can be used standalone or with
+It isn't tied with L<Test::Builder> so it can be used standalone or with any
 xUnit-like framework, i.e. L<Test::Unit::Lite>.
 
 =item *
 
-The mock classes are C<Class::MOP> based so they're easly expandable and have
-introspection capability.
+The API for defining mock objects behavior is based on L<Class::MOP> so it
+doesn't clash with API of original objects and is easy expandable. 
 
 =item *
 
@@ -55,9 +55,6 @@ method).  An exception also can be thrown if the method wasn't called at all
 (C<mock_expect_once> method).
 
 =back
-
-All mock classes have L<Test::Mock::Class::Base> as their base class.  This
-class provides API for extending mock classes and adding special assertions.
 
 =for readme stop
 
@@ -89,15 +86,13 @@ use namespace::clean -except => 'meta';
 BEGIN {
     my %exports = ();
 
-=item mock_class(I<class> : Str, I<mock_class> : Str = undef) : Str
+=item mock_class(I<class> : Str, I<mock_class> : Str = undef) : Moose::Meta::Class
 
-Creates mock class based on original I<class>.  If the name of I<mock_class>
-is undefined, its name is created based on name of original I<class> with
-added C<::Mock> suffix.
+Creates the concrete mock class based on original I<class>.  If the name of
+I<mock_class> is undefined, its name is created based on name of original
+I<class> with added C<::Mock> suffix.
 
-The function returns the name of new I<mock_class>.
-
-=back
+The function returns the metaclass object of new I<mock_class>.
 
 =cut
 
@@ -105,6 +100,25 @@ The function returns the name of new I<mock_class>.
         sub ($;$) {
             return Test::Mock::Class->create_mock_class(
                 defined $_[1] ? $_[1] : $_[0] . '::Mock',
+                class => $_[0],
+            );
+        };
+    };
+
+=item mock_anon_class(I<class> : Str) : Moose::Meta::Class
+
+Creates an anonymous mock class based on original I<class>.  The name of this
+class is automatically generated.
+
+The function returns the metaobject of new mock class.
+
+=back
+
+=cut
+
+    $exports{mock_anon_class} = sub {
+        sub ($;$) {
+            return Test::Mock::Class->create_mock_anon_class(
                 class => $_[0],
             );
         };
@@ -150,28 +164,19 @@ Imports all functions into caller's namespace.
 [                          <<utility>>
                         Test::Mock::Class
  -----------------------------------------------------------------------
- +class : Str
- +mock_class : Str
- +mock_metaclass : Moose::Meta::Class
- +methods : ArrayRef[Str]
- +mock_base : Str
- +inspector : Test::Mock::Class::Inspector
- +mock_inspector : Test::Mock::Class::Inspector
  -----------------------------------------------------------------------
- +generate() : ClassName
- mock_class(class : Str, mock_class : Str = undef, methods : Array = ())
- mock_class_partial(class : Str, mock_class : Str, methods : Array)
+ mock_class(class : Str, mock_class : Str = undef) : Moose::Meta::Class
+ mock_anon_class(class : Str) : Moose::Meta::Class
                                                                         ]
 
 =end umlwiki
 
 =head1 SEE ALSO
 
-L<Test::MockObject>, L<Test::MockClass>.
-
-=back
-
+Mock metaclass API: L<Test::Mock::Class::Role::Meta::Class>,
 L<Moose::Meta::Class>.
+
+Other implementations: L<Test::MockObject>, L<Test::MockClass>.
 
 =head1 BUGS
 
