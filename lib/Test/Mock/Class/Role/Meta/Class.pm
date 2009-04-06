@@ -73,11 +73,10 @@ has '_mock_return' => (
 );
 
 
-#use namespace::clean -except => 'meta';
+use namespace::clean -except => 'meta';
 
 
-use Smart::Comments;
-
+## no critic RequireCheckingReturnValueOfEval
 
 =head1 CONSTRUCTORS
 
@@ -671,16 +670,15 @@ matching value found then an error is triggered.
 sub _mock_emulate_call {
     my ($self, $method, $timing, @args) = @_;
 
-    my ($attribute, $action) = ('_mock_return', 'value');
-
     assert_not_null($method) if ASSERT;
     assert_not_null($timing) if ASSERT;
 
-    assert_equals('HASH', ref $self->$attribute) if ASSERT;
-    return unless defined $self->$attribute->{$method};
-
     return $self->_mock_method_matching(
-        $attribute, $action, $method, $timing, @args
+        attribute => '_mock_return',
+        action    => 'value',
+        method    => $method,
+        timing    => $timing,
+        args      => \@args,
     );
 };
 
@@ -712,13 +710,12 @@ sub _mock_check_expectations {
     assert_not_null($method) if ASSERT;
     assert_not_null($timing) if ASSERT;
 
-    my ($attribute, $action) = ('_mock_expectation', 'assertion');
-
-    assert_equals('HASH', ref $self->$attribute) if ASSERT;
-    return unless defined $self->$attribute->{$method};
-
     my $value = $self->_mock_method_matching(
-        $attribute, $action, $method, $timing, @args
+        attribute => '_mock_expectation',
+        action    => 'assertion',
+        method    => $method,
+        timing    => $timing,
+        args      => \@args,
     );
 
     fail([
@@ -763,9 +760,14 @@ Calling arguments to match.
 =cut
 
 sub _mock_method_matching {
-    my ($self, $attribute, $action, $method, $timing, @args) = @_;
+    my ($self, %args) = @_;
 
-    my $attribute_for_method = $self->$attribute->{$method};
+    assert_not_null($args{method}) if ASSERT;
+    assert_not_null($args{attribute}) if ASSERT;
+    assert_equals('ARRAY', $args{args}) if ASSERT;
+
+    my $attribute = $args{attribute};
+    my $attribute_for_method = $self->$attribute->{$args{method}};
 
     return if not defined $attribute_for_method
               or (ref $attribute_for_method || '') ne 'ARRAY';
@@ -773,7 +775,7 @@ sub _mock_method_matching {
     RULE:
     foreach my $rule (@$attribute_for_method) {
         if ($rule->{at}) {
-            next unless $timing == $rule->{at};
+            next unless $args{timing} == $rule->{at};
         };
 
         if (exists $rule->{args}) {
@@ -782,25 +784,25 @@ sub _mock_method_matching {
                             : ( $rule->{args} );
 
             # number of args matches?
-            next unless @args == @rule_args;
+            next unless @{$args{args}} == @rule_args;
 
             # iterate args
             foreach my $i (0 .. @rule_args - 1) {
                 my $rule_arg = $rule_args[$i];
                 if ((ref $rule_arg || '') eq 'Regexp') {
-                    next RULE unless $args[$i] =~ $rule_arg;
+                    next RULE unless $args{args}->[$i] =~ $rule_arg;
                 }
                 elsif (ref $rule_arg) {
                     # TODO: use Test::Deep::NoTest
                     eval {
-                        assert_deep_equals($args[$i], $rule_arg);
+                        assert_deep_equals($args{args}->[$i], $rule_arg);
                     };
                     next RULE if $@;
                 }
                 else {
                     # TODO: do not use eval
                     eval {
-                        assert_equals($args[$i], $rule_arg);
+                        assert_equals($args{args}->[$i], $rule_arg);
                     };
                     next RULE if $@;
                 };
@@ -811,18 +813,20 @@ sub _mock_method_matching {
 
         fail([
             'Maximum call count (%d) for method (%s) at call (%d)',
-            $rule->{maximum}, $method, $timing
+            $rule->{maximum}, $args{method}, $args{timing}
         ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
 
-        if (ref $rule->{$action} eq 'CODE') {
-            return $rule->{$action}->($method, $timing, @args);
+        if (ref $rule->{$args{action}} eq 'CODE') {
+            return $rule->{$args{action}}->(
+                $args{method}, $args{timing}, @{$args{args}}
+            );
         }
-        elsif (defined $rule->{$action}) {
-            return $rule->{$action};
+        elsif (defined $rule->{$args{action}}) {
+            return $rule->{$args{action}};
         };
     };
 
-    return undef;
+    return;
 };
 
 
