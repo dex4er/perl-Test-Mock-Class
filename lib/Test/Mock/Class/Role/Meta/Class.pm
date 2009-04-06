@@ -36,8 +36,6 @@ use Test::Assert ':all';
 
 Count of method calls stored as HashRef.
 
-=back
-
 =cut
 
 has '_mock_call' => (
@@ -50,8 +48,6 @@ has '_mock_call' => (
 =item _mock_expectation : HashRef
 
 Expectations for mock methods stored as HashRef.
-
-=back
 
 =cut
 
@@ -122,8 +118,6 @@ sub create_mock_class {
 };
 
 
-=head1 METHODS
-
 =item create_mock_anon_class(:I<class> : Str, I<args> : Hash) : Moose::Meta::Class
 
 Creates new L<Moose::Meta::Class> object which represents anonymous mock
@@ -167,7 +161,7 @@ sub add_mock_method {
     my ($self, $method) = @_;
     $self->add_method( $method => sub {
         my $method_self = shift;
-        return $method_self->meta->_mock_invoke($method, @_);
+        return $method_self->meta->mock_invoke($method, @_);
     } );
     return $self;
 };
@@ -186,9 +180,9 @@ sub add_mock_constructor {
     my ($self, $constructor) = @_;
     $self->add_method( $constructor => sub {
         my $method_class = shift;
-        $method_class->meta->_mock_invoke($constructor, @_) if blessed $method_class;
+        $method_class->meta->mock_invoke($constructor, @_) if blessed $method_class;
         my $new_object = $method_class->meta->new_object(@_);
-        $new_object->meta->_mock_invoke($constructor, @_);
+        $new_object->meta->mock_invoke($constructor, @_);
         return $new_object;
     } );
     return $self;
@@ -236,6 +230,28 @@ sub mock_tally {
     };
 
     return $self;
+};
+
+
+=item mock_invoke(I<method> : Str, I<args> : Array) : Any
+
+Returns the expected value for the method name and checks expectations.  Will
+generate any test assertions as a result of expectations if there is a test
+present.
+
+This method is called in overridden methods of mock class, but you need to
+call it manually if you construct own method.
+
+=cut
+
+sub mock_invoke {
+    my ($self, $method, @args) = @_;
+
+    assert_not_null($method) if ASSERT;
+
+    my $timing = $self->_mock_add_call($method, @args);
+    $self->_mock_check_expectations($method, $timing, @args);
+    return $self->_mock_emulate_call($method, $timing, @args);
 };
 
 
@@ -642,25 +658,6 @@ sub _get_mock_metaclass_instance_roles {
 
     return map { $_->name }
            @{ $metaclass_instance->roles };
-};
-
-
-=item _mock_invoke(I<method> : Str, I<args> : Array) : Any
-
-Returns the expected value for the method name and checks expectations.  Will
-generate any test assertions as a result of expectations if there is a test
-present.
-
-=cut
-
-sub _mock_invoke {
-    my ($self, $method, @args) = @_;
-
-    assert_not_null($method) if ASSERT;
-
-    my $timing = $self->_mock_add_call($method, @args);
-    $self->_mock_check_expectations($method, $timing, @args);
-    return $self->_mock_emulate_call($method, $timing, @args);
 };
 
 
