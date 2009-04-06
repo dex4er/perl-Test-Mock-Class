@@ -18,13 +18,13 @@ my $build = Module::Build->new(
         'perl'               => 5.006,
         'Class::MOP'         => 0.77,
         'Moose'              => 0.56,
+        'Test::Assert'       => 0,
     },
     optional => {
     },
     build_requires => {
         'parent'             => 0,
         'Test::Unit::Lite'   => 0.12,
-        'Test::Assert'       => 0,
     },
     create_makefile_pl => 'traditional',
     create_readme => 1,
