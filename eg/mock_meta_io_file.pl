@@ -14,6 +14,7 @@ my $mock = mock_anon_class 'IO::Moose::File';
 $mock->add_mock_return_value( open => ( args => [qr//, 'r'], value => TRUE ) );
 $mock->add_mock_return_value( open => ( args => [qr//, 'w'], value => undef ) );
 $mock->add_mock_return_value_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
+$mock->add_mock_expectation_never( 'close' );
 
 my $io = $mock->new_object;
 
@@ -28,5 +29,8 @@ assert_null( $io->getline );
 
 # access denied
 assert_false( $io->open('/etc/passwd', 'w') );
+
+# close was not called
+$io->meta->mock_tally;
 
 print "OK\n";
