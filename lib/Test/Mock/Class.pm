@@ -171,8 +171,6 @@ Imports all functions into caller's namespace.
 1;
 
 
-=back
-
 =begin umlwiki
 
 = Class Diagram =

@@ -23,7 +23,7 @@ use Moose::Role;
 
 
 use Class::Inspector;
-use Symbol;
+use Symbol ();
 
 use Test::Assert ':all';
 
@@ -90,8 +90,20 @@ use Smart::Comments;
 =item create_mock_class(I<name> : Str, :I<class> : Str, I<args> : Hash) : Moose::Meta::Class
 
 Creates new L<Moose::Meta::Class> object which represents named mock class.
+The method takes additional arguments:
+
+=over
+
+=item class
+
 Optional L<class> parameter is a name of original class and its methods will
 be created for new mock class. 
+
+=item methods
+
+List of additional methods to create.
+
+=back
 
 The constructor returns metaclass object.
 
@@ -313,7 +325,8 @@ sub add_mock_return_value_at {
 
 =item add_mock_exception(I<method> : Str, :I<at> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any]) : Self
 
-Sets up a trigger to throw an exception upon the method call.
+Sets up a trigger to throw an exception upon the method call.  The method
+takes the same arguments as C<add_mock_return_value>.
 
 =cut
 
@@ -362,7 +375,7 @@ sub add_mock_exception_at {
 
 Sets up an expected call with a set of expected parameters in that call. All
 calls will be compared to these expectations regardless of when the call is
-made.
+made.  The method takes the same arguments as C<add_mock_return_value>.
 
 =cut
 
@@ -540,6 +553,14 @@ sub _mock_reinitialize {
 };
 
 
+=item _construct_mock_class(:I<class> : Str, :I<methods> : ArrayRef) : Self
+
+Constructs mock class based on original class.  Adds the same methods as in
+original class.  If original class has C<new> method, the constructor with
+this name is created.
+
+=cut
+
 sub _construct_mock_class {
     my ($self, %args) = @_;
 
@@ -555,7 +576,7 @@ sub _construct_mock_class {
         my %uniq = map { $_ => 1 }
                    (
                        $self->_get_mock_methods($args{class}),
-                       @methods, 'new'
+                       @methods,
                    );
         keys %uniq;
     };
@@ -626,7 +647,7 @@ sub _get_mock_metaclass_instance_roles {
 
 =item _mock_invoke(I<method> : Str, I<args> : Array) : Any
 
-Returns the expected value for the method name and checks expectations. Will
+Returns the expected value for the method name and checks expectations.  Will
 generate any test assertions as a result of expectations if there is a test
 present.
 
@@ -645,7 +666,7 @@ sub _mock_invoke {
 
 =item _mock_emulate_call(I<method> : Str, I<timing> : Int, I<args> : Array) : Any
 
-Finds the return value matching the incoming arguments. If there is no
+Finds the return value matching the incoming arguments.  If there is no
 matching value found then an error is triggered.
 
 =cut
@@ -711,7 +732,7 @@ sub _mock_check_expectations {
 };
 
 
-=item _mock_method_matching(I<matchings> : ArrayRef, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array) : Any
+=item _mock_method_matching(I<attribute> : Str, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array) : Any
 
 Do matching for method and do some action if succeed.
 
@@ -720,9 +741,9 @@ C<_mock_check_expectations> methods.
 
 =over
 
-=item matchings
+=item attribute
 
-Name of C<_mock_attribute> slot which contains matching.
+Name of metaclass'es attribute which contains matching.
 
 =item action
 
@@ -817,13 +838,13 @@ sub _mock_method_matching {
 
 = Class Diagram =
 
-[                          <<utility>>
-                        Test::Mock::Class
- -----------------------------------------------------------------------
+[                                   <<role>>
+                        Test::Mock::Class::Role::Meta::Class
+ -----------------------------------------------------------------------------
  #_mock_call : HashRef
  #_mock_expectation : HashRef
  #_mock_return : HashRef
- -----------------------------------------------------------------------
+ -----------------------------------------------------------------------------
  +add_mock_return_value( I<method> : Str, :I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
  +add_mock_return_value_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
  +add_mock_exception( I<method> : Str, :I<at> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any] ) : Self
@@ -837,42 +858,17 @@ sub _mock_method_matching {
  +add_mock_expectation_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
  +add_mock_expectation_at_least_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
  +mock_tally() : Self
-
-                                                                        ]
+                                                                              ]
 
 =end umlwiki
 
 =head1 SEE ALSO
 
-L<Test::MockObject>, L<Test::MockClass>.
-
-=back
-
-L<Moose::Meta::Class>.
+L<Test::Mock::Class>.
 
 =head1 BUGS
 
 The API is not stable yet and can be changed in future.
-
-=head1 TODO
-
-=over
-
-=item *
-
-Support for L<Moose::Role> based classes.
-
-=item *
-
-Better documentation.
-
-=item *
-
-More tests.
-
-=back
-
-=for readme continue
 
 =head1 AUTHOR
 
