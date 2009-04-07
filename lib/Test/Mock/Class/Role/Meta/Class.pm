@@ -410,6 +410,7 @@ sub add_mock_expectation {
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
     push @{ $self->_mock_expectation->{$method} } => {
+        assertion => 1,
         %params,
     };
 
