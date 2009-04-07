@@ -254,7 +254,7 @@ sub mock_invoke {
 };
 
 
-=item add_mock_return_value(I<method> : Str, :I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any]) : Self
+=item add_mock_return_value(I<method> : Str, I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any]) : Self
 
 Sets a return for a parameter list that will be passed on by call to this
 method that match.
@@ -272,35 +272,35 @@ Method name.
 
 Returned value.
 
-  $m->add_mock_return_value( open => ( value => 1 ) );
+  $m->add_mock_return_value( 'open', 1 );
 
 If value is coderef, then it is called with method name, current timing
 and original arguments as arguments.
 
-  $m->add_mock_return_value( sequence => (
-      value => sub { qw{one two three}[ $_[1]-1 ] }
-  ) );
+  $m->add_mock_return_value( 'sequence', sub {
+      qw{one two three}[ $_[1] ]
+  } );
 
 =item at
 
-Value is returned only for current timing.
+Value is returned only for current timing, started from C<0>.
 
-  $m->add_mock_return_value( sequence => ( at => 1, value => 'one' ) );
-  $m->add_mock_return_value( sequence => ( at => 2, value => 'two' ) );
-  $m->add_mock_return_value( sequence => ( at => 3, value => 'three' ) );
+  $m->add_mock_return_value( 'sequence', 'one',   at => 0 );
+  $m->add_mock_return_value( 'sequence', 'two',   at => 1 );
+  $m->add_mock_return_value( 'sequence', 'three', at => 2 );
 
 =item args
 
 Value is returned only if method is called with proper argument.
 
   $m->add_mock_return_value(
-      get_value => ( args => ['dbuser'], value => 'admin' )
+      'get_value', 'admin', args => ['dbuser'],
   );
   $m->add_mock_return_value(
-      get_value => ( args => ['dbpass'], value => 'secret' )
+      'get_value', 'secret', args => ['dbpass'],
   );
   $m->add_mock_return_value(
-      get_value => ( args => [qr/.*/], value => sub { $_[2] } )
+      'get_value', sub { $_[2] }, args => [qr/.*/],
   );
 
 =back
@@ -308,60 +308,67 @@ Value is returned only if method is called with proper argument.
 =cut
 
 sub add_mock_return_value {
-    my ($self, $method, %params) = @_;
+    my ($self, $method, $value, %params) = @_;
 
     $self->throw_error(
-        'Usage: $mock->meta->add_mock_return_value( METHOD => PARAMS )'
+        'Usage: $mock->meta->add_mock_return_value( METHOD => VALUE, PARAMS )'
     ) unless defined $method;
 
     assert_equals('HASH', ref $self->_mock_return) if ASSERT;
-    push @{ $self->_mock_return->{$method} } => \%params;
+    push @{ $self->_mock_return->{$method} } => { %params, value => $value };
 
     return $self;
 };
 
 
-=item add_mock_return_value_at(I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item add_mock_return_value_at(I<at> : Int, I<method> : Str, I<value> : Any, :I<args> : ArrayRef[Any]) : Self
 
 Convenience method for returning a value upon the method call.
 
 =cut
 
 sub add_mock_return_value_at {
-    my ($self, $at, $method, %params) = @_;
+    my ($self, $at, $method, $value, %params) = @_;
 
     $self->throw_error(
-        message => 'Usage: $mock->meta->add_mock_return_value_at( AT, METHOD => PARAMS )'
+        message => 'Usage: $mock->meta->add_mock_return_value_at( AT, METHOD => VALUE, PARAMS )'
     ) unless defined $at and defined $method;
 
-    return $self->add_mock_return_value( $method => %params, at => $at );
+    return $self->add_mock_return_value( $method => $value, %params, at => $at );
 };
 
 
-=item add_mock_exception(I<method> : Str, :I<at> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any]) : Self
+=item add_mock_exception(I<method> : Str, :I<at> : Int, I<exception> : Str|Object, :I<args> : ArrayRef[Any], I<params> : Hash) : Self
 
 Sets up a trigger to throw an exception upon the method call.  The method
 takes the same arguments as C<add_mock_return_value>.
 
+If an I<exception> parameter is a string, the L<Exception::Assertion> is
+thrown with this parameter as its message and rest of parameters as its
+arguments.  If an I<exception> parameter is an object reference, the C<throw>
+method is called on this object with predefined message and rest of parameters
+as its arguments.
+
 =cut
 
 sub add_mock_exception {
-    my ($self, $method, %params) = @_;
+    my ($self, $method, $exception, %params) = @_;
 
     Exception::Argument->throw(
-        message => 'Usage: $mock->meta->add_mock_exception( METHOD => PARAMS )'
+        message => 'Usage: $mock->meta->add_mock_exception( METHOD => EXCEPTION, PARAMS )'
     ) unless defined $method;
 
-    my $exception = $params{exception} || 'Exception::Assertion';
+    $exception = Exception::Assertion->new(
+        message => $exception,
+        reason  => ['Thrown on method (%s)', $method],
+        %params
+    ) unless blessed $exception;
 
     assert_equals('HASH', ref $self->_mock_return) if ASSERT;
     push @{ $self->_mock_return->{$method} } => {
         %params,
         value => sub {
-            $exception->throw(
-                message => ['Throw on method (%s)', $method],
-                %params
-            )
+            $exception->throw;
         },
     };
 
@@ -369,20 +376,20 @@ sub add_mock_exception {
 };
 
 
-=item add_mock_exception_at(I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item add_mock_exception_at(I<at> : Int, I<method> : Str, I<exception> : Str|Object, :I<args> : ArrayRef[Any]) : Self
 
 Convenience method for throwing an error upon the method call.
 
 =cut
 
 sub add_mock_exception_at {
-    my ($self, $at, $method, %params) = @_;
+    my ($self, $at, $method, $exception, %params) = @_;
 
     Exception::Argument->throw(
-        message => 'Usage: $mock->meta->add_mock_exception_at( AT, METHOD => PARAMS )'
+        message => 'Usage: $mock->meta->add_mock_exception_at( AT, METHOD => EXCEPTION, PARAMS )'
     ) unless defined $at and defined $method;
 
-    return $self->add_mock_exception( $method => %params, at => $at );
+    return $self->add_mock_exception( $method => $exception, %params, at => $at );
 };
 
 
@@ -599,7 +606,7 @@ sub _construct_mock_class {
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
         if ($method =~ /^(DEMOLISHALL|DESTROY)$/) {
-            # ignore
+            # ignore destructor
         }
         elsif ($method eq 'new') {
             $self->add_mock_constructor($method);
@@ -688,7 +695,7 @@ sub _mock_emulate_call {
 
 =item _mock_add_call(I<method> : Str, I<args> : Array) : Int
 
-Adds one to the call count of a method and returns current value.
+Adds one to the call count of a method and returns previous value.
 
 =cut
 
@@ -698,7 +705,7 @@ sub _mock_add_call {
     assert_not_null($method) if ASSERT;
 
     assert_equals('HASH', ref $self->call) if ASSERT;
-    return ++$self->_mock_call->{$method};
+    return $self->_mock_call->{$method}++;
 };
 
 =item _mock_check_expectations(I<method> : Str, I<timing> : Num, I<args> : Array) : Self
@@ -771,7 +778,7 @@ sub _mock_method_matching {
 
     RULE:
     foreach my $rule (@$attribute_for_method) {
-        if ($rule->{at}) {
+        if (defined $rule->{at}) {
             next unless $args{timing} == $rule->{at};
         };
 

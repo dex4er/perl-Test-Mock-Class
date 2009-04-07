@@ -9,146 +9,121 @@ use Test::Assert ':all';
 
 use Test::Mock::Class;
 
-has meta => ( is => 'rw' );
+has metamock => ( is => 'rw' );
 
 sub set_up {
     my ($self) = @_;
-    $self->meta(
+    $self->metamock(
         Test::Mock::Class->create_mock_anon_class(
             class => 'Test::Mock::Class::Test::Dummy',
         )
     );
-    assert_true($self->meta->isa('Moose::Meta::Class'));
+    assert_true($self->metamock->isa('Moose::Meta::Class'));
 };
 
 sub test_default_return {
     my ($self) = @_;
-    $self->meta->add_mock_return_value('a_method' => ( value => 'aaa' ) );
-    my $mock = $self->meta->new_object;
+    $self->metamock->add_mock_return_value('a_method', 'aaa');
+    my $mock = $self->metamock->new_object;
     assert_equals('aaa', $mock->a_method);
     assert_equals('aaa', $mock->a_method);
 };
 
 sub test_parametered_return {
     my ($self) = @_;
-    $self->meta->add_mock_return_value('a_method' => (
-        value => 'aaa',
-        args  => [1, 2, 3],
-    ) );
-    my $mock = $self->meta->new_object;
+    $self->metamock->add_mock_return_value('a_method', 'aaa', args => [1, 2, 3]);
+    my $mock = $self->metamock->new_object;
     assert_null($mock->a_method);
     assert_equals('aaa', $mock->a_method(1, 2, 3));
 };
 
-1; __END__
+sub test_set_return_gives_object_reference {
+    my ($self) = @_;
+    my $object = Test::Mock::Class::Test::Dummy->new;
+    $self->metamock->add_mock_return_value('a_method', $object, args => [1, 2, 3]);
+    my $mock = $self->metamock->new_object;
+    assert_equals($object, $mock->a_method(1, 2, 3));
+};
 
-function testSetReturnGivesObjectReference() {
-    $mock = new MockDummy();
-    $object = new Dummy();
-    $mock->returns('aMethod', $object, array(1, 2, 3));
-    $this->assertSame($mock->aMethod(1, 2, 3), $object);
-}
+sub test_return_value_can_be_chosen_just_by_pattern_matching_arguments {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value('a_method', 'aaa', args => [qr/hello/i]);
+    my $mock = $self->metamock->new_object;
+    assert_equals('aaa', $mock->a_method('Hello'));
+    assert_null($mock->a_method('Goodbye'));
+};
 
-function testSetReturnReferenceGivesOriginalReference() {
-    $mock = new MockDummy();
-    $object = 1;
-    $mock->returnsByReference('aReferenceMethod', $object, array(1, 2, 3));
-    $this->assertReference($mock->aReferenceMethod(1, 2, 3), $object);
-}
+sub test_multiple_methods {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value('a_method', 100, args => [1]);
+    $self->metamock->add_mock_return_value('a_method', 200, args => [2]);
+    $self->metamock->add_mock_return_value('another_method', 10, args => [1]);
+    $self->metamock->add_mock_return_value('another_method', 20, args => [2]);
+    my $mock = $self->metamock->new_object;
+    assert_equals(100, $mock->a_method(1));
+    assert_equals(10, $mock->another_method(1));
+    assert_equals(200, $mock->a_method(2));
+    assert_equals(20, $mock->another_method(2));
+};
 
-function testReturnValueCanBeChosenJustByPatternMatchingArguments() {
-    $mock = new MockDummy();
-    $mock->returnsByValue(
-            "aMethod",
-            "aaa",
-            array(new PatternExpectation('/hello/i')));
-    $this->assertIdentical($mock->aMethod('Hello'), 'aaa');
-    $this->assertNull($mock->aMethod('Goodbye'));
-}
+sub test_return_sequence {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value_at(0, 'a_method', 'aaa');
+    $self->metamock->add_mock_return_value_at(1, 'a_method', 'bbb');
+    $self->metamock->add_mock_return_value_at(3, 'a_method', 'ddd');
+    my $mock = $self->metamock->new_object;
+    assert_equals('aaa', $mock->a_method);
+    assert_equals('bbb', $mock->a_method);
+    assert_null($mock->a_method);
+    assert_equals('ddd', $mock->a_method);
+};
 
-function testMultipleMethods() {
-    $mock = new MockDummy();
-    $mock->returnsByValue("aMethod", 100, array(1));
-    $mock->returnsByValue("aMethod", 200, array(2));
-    $mock->returnsByValue("anotherMethod", 10, array(1));
-    $mock->returnsByValue("anotherMethod", 20, array(2));
-    $this->assertIdentical($mock->aMethod(1), 100);
-    $this->assertIdentical($mock->anotherMethod(1), 10);
-    $this->assertIdentical($mock->aMethod(2), 200);
-    $this->assertIdentical($mock->anotherMethod(2), 20);
-}
+sub test_complicated_return_sequence {
+    my ($self) = @_;
+    my $object = Test::Mock::Class::Test::Dummy->new;
+    $self->metamock->add_mock_return_value_at(1, 'a_method', 'aaa', args => ['a']);
+    $self->metamock->add_mock_return_value_at(1, 'a_method', 'bbb');
+    $self->metamock->add_mock_return_value_at(2, 'a_method', $object, args => [qr//, 2]);
+    $self->metamock->add_mock_return_value_at(2, 'a_method', "value", args => [qr//, 3]);
+    $self->metamock->add_mock_return_value('a_method', 3, args => [3]);
+    my $mock = $self->metamock->new_object;
+    assert_null($mock->a_method);
+    assert_equals('aaa', $mock->a_method('a'));
+    assert_equals($object, $mock->a_method(1, 2));
+    assert_equals(3, $mock->a_method(3));
+    assert_null($mock->a_method);
+};
 
-function testReturnSequence() {
-    $mock = new MockDummy();
-    $mock->returnsByValueAt(0, "aMethod", "aaa");
-    $mock->returnsByValueAt(1, "aMethod", "bbb");
-    $mock->returnsByValueAt(3, "aMethod", "ddd");
-    $this->assertIdentical($mock->aMethod(), "aaa");
-    $this->assertIdentical($mock->aMethod(), "bbb");
-    $this->assertNull($mock->aMethod());
-    $this->assertIdentical($mock->aMethod(), "ddd");
-}
+sub test_multiple_method_sequences {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value_at(0, 'a_method', 'aaa');
+    $self->metamock->add_mock_return_value_at(1, 'a_method', 'bbb');
+    $self->metamock->add_mock_return_value_at(0, 'another_method', 'ccc');
+    $self->metamock->add_mock_return_value_at(1, 'another_method', 'ddd');
+    my $mock = $self->metamock->new_object;
+    assert_equals('aaa', $mock->a_method);
+    assert_equals('ccc', $mock->another_method);
+    assert_equals('bbb', $mock->a_method);
+    assert_equals('ddd', $mock->another_method);
+};
 
-function testSetReturnReferenceAtGivesOriginal() {
-    $mock = new MockDummy();
-    $object = 100;
-    $mock->returnsByReferenceAt(1, "aReferenceMethod", $object);
-    $this->assertNull($mock->aReferenceMethod());
-    $this->assertReference($mock->aReferenceMethod(), $object);
-    $this->assertNull($mock->aReferenceMethod());
-}
+sub test_sequence_fallback {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value_at(0, 'a_method', 'aaa', args => ['a']);
+    $self->metamock->add_mock_return_value_at(1, 'a_method', 'bbb', args => ['a']);
+    $self->metamock->add_mock_return_value('a_method', 'AAA');
+    my $mock = $self->metamock->new_object;
+    assert_equals('aaa', $mock->a_method('a'));
+    assert_equals('AAA', $mock->a_method('b'));
+};
 
-function testReturnsAtGivesOriginalObjectHandle() {
-    $mock = new MockDummy();
-    $object = new Dummy();
-    $mock->returnsAt(1, "aMethod", $object);
-    $this->assertNull($mock->aMethod());
-    $this->assertSame($mock->aMethod(), $object);
-    $this->assertNull($mock->aMethod());
-}
-
-function testComplicatedReturnSequence() {
-    $mock = new MockDummy();
-    $object = new Dummy();
-    $mock->returnsAt(1, "aMethod", "aaa", array("a"));
-    $mock->returnsAt(1, "aMethod", "bbb");
-    $mock->returnsAt(2, "aMethod", $object, array('*', 2));
-    $mock->returnsAt(2, "aMethod", "value", array('*', 3));
-    $mock->returns("aMethod", 3, array(3));
-    $this->assertNull($mock->aMethod());
-    $this->assertEqual($mock->aMethod("a"), "aaa");
-    $this->assertSame($mock->aMethod(1, 2), $object);
-    $this->assertEqual($mock->aMethod(3), 3);
-    $this->assertNull($mock->aMethod());
-}
-
-function testMultipleMethodSequences() {
-    $mock = new MockDummy();
-    $mock->returnsByValueAt(0, "aMethod", "aaa");
-    $mock->returnsByValueAt(1, "aMethod", "bbb");
-    $mock->returnsByValueAt(0, "anotherMethod", "ccc");
-    $mock->returnsByValueAt(1, "anotherMethod", "ddd");
-    $this->assertIdentical($mock->aMethod(), "aaa");
-    $this->assertIdentical($mock->anotherMethod(), "ccc");
-    $this->assertIdentical($mock->aMethod(), "bbb");
-    $this->assertIdentical($mock->anotherMethod(), "ddd");
-}
-
-function testSequenceFallback() {
-    $mock = new MockDummy();
-    $mock->returnsByValueAt(0, "aMethod", "aaa", array('a'));
-    $mock->returnsByValueAt(1, "aMethod", "bbb", array('a'));
-    $mock->returnsByValue("aMethod", "AAA");
-    $this->assertIdentical($mock->aMethod('a'), "aaa");
-    $this->assertIdentical($mock->aMethod('b'), "AAA");
-}
-
-function testMethodInterference() {
-    $mock = new MockDummy();
-    $mock->returnsByValueAt(0, "anotherMethod", "aaa");
-    $mock->returnsByValue("aMethod", "AAA");
-    $this->assertIdentical($mock->aMethod(), "AAA");
-    $this->assertIdentical($mock->anotherMethod(), "aaa");
-}
+sub test_method_interference {
+    my ($self) = @_;
+    $self->metamock->add_mock_return_value_at(0, 'another_method', 'aaa');
+    $self->metamock->add_mock_return_value('a_method', 'AAA');
+    my $mock = $self->metamock->new_object;
+    assert_equals('AAA', $mock->a_method);
+    assert_equals('aaa', $mock->another_method());
+};
 
 1;

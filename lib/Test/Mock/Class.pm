@@ -13,9 +13,8 @@ Test::Mock::Class - Simulating other classes
   my $mock_object = Net::FTP::Mock->new;
 
   # anonymous mocked class
-  my $generator = Test::Mock::Class->new( class => 'Net::FTP' );
-  my $mock_class = $generator->generate;
-  my $mock_object = $mock_class->new;
+  my $metamock = mock_anon_class 'Net::FTP';
+  my $mock_object = $metamock->new_object;
 
 =head1 DESCRIPTION
 
