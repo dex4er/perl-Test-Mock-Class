@@ -22,6 +22,8 @@ our $VERSION = '0.01';
 use Moose::Role;
 
 
+use Moose::Util;
+
 use Class::Inspector;
 use Symbol ();
 
@@ -115,7 +117,7 @@ sub add_mock_method {
     my ($self, $method) = @_;
     $self->add_method( $method => sub {
         my $method_self = shift;
-        return $method_self->meta->mock_invoke($method, @_);
+        return $method_self->mock_invoke($method, @_);
     } );
     return $self;
 };
@@ -134,9 +136,9 @@ sub add_mock_constructor {
     my ($self, $constructor) = @_;
     $self->add_method( $constructor => sub {
         my $method_class = shift;
-        $method_class->meta->mock_invoke($constructor, @_) if blessed $method_class;
+        $method_class->mock_invoke($constructor, @_) if blessed $method_class;
         my $new_object = $method_class->meta->new_object(@_);
-        $new_object->meta->mock_invoke($constructor, @_);
+        $new_object->mock_invoke($constructor, @_);
         return $new_object;
     } );
     return $self;
@@ -191,6 +193,11 @@ this name is created.
 sub _construct_mock_class {
     my ($self, %args) = @_;
 
+    Moose::Util::apply_all_roles(
+        $self,
+        'Test::Mock::Class::Role::Object',
+    );
+
     if (defined $args{class}) {
         $self->superclasses(
             $self->_get_mock_superclasses($args{class}),
@@ -210,7 +217,7 @@ sub _construct_mock_class {
 
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
-        if ($method =~ /^(DEMOLISHALL|DESTROY)$/) {
+        if ($method =~ /^(DEMOLISHALL|DESTROY|DOES|does|isa)$/) {
             # ignore destructor
         }
         elsif ($method eq 'new') {

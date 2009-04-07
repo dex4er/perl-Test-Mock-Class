@@ -12,9 +12,9 @@ use Test::Assert ':all';
 mock_class 'IO::Moose::File' => 'IO::File::Mock';
 
 my $io = IO::File::Mock->new;
-$io->mock_return_value( open => ( args => [qr//, 'r'], value => TRUE ) );
-$io->mock_return_value( open => ( args => [qr//, 'w'], value => undef ) );
-$io->mock_return_value_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
+$io->mock_return( open => TRUE, args => [qr//, 'r'] );
+$io->mock_return( open => undef, args => [qr//, 'w'] );
+$io->mock_return_at( 0, getline => 'root:x:0:0:root:/root:/bin/bash' );
 $io->mock_expect_never( 'close' );
 
 # ok

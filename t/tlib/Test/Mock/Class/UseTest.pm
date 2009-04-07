@@ -18,7 +18,7 @@ sub test_mock_class {
         assert_true($mock->isa('Moose::Meta::Class'));
         assert_true(Test::Mock::Class::Test::Dummy::Mock->isa('Test::Mock::Class::Test::Dummy::Mock'));
     };
-    
+
     {
         my $mock = eval q{
             mock_class 'Test::Mock::Class::Test::Dummy' => 'Test::Mock::Class::Test::Dummy::Mock::Another';

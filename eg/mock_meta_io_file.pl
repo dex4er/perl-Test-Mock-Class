@@ -10,13 +10,11 @@ use Test::Mock::Class ':all';
 use Test::Assert ':all';
 
 my $mock = mock_anon_class 'IO::Moose::File';
-
-$mock->add_mock_return_value( open => ( args => [qr//, 'r'], value => TRUE ) );
-$mock->add_mock_return_value( open => ( args => [qr//, 'w'], value => undef ) );
-$mock->add_mock_return_value_at( 1, getline => ( value => 'root:x:0:0:root:/root:/bin/bash' ) );
-$mock->add_mock_expectation_never( 'close' );
-
 my $io = $mock->new_object;
+$io->mock_return( open => TRUE, args => [qr//, 'r'] );
+$io->mock_return( open => undef, args => [qr//, 'w'] );
+$io->mock_return_at( 0, getline => 'root:x:0:0:root:/root:/bin/bash' );
+$io->mock_expect_never( 'close' );
 
 # ok
 assert_true( $io->open('/etc/passwd', 'r') );
@@ -31,6 +29,6 @@ assert_null( $io->getline );
 assert_false( $io->open('/etc/passwd', 'w') );
 
 # close was not called
-$io->meta->mock_tally;
+$io->mock_tally;
 
 print "OK\n";

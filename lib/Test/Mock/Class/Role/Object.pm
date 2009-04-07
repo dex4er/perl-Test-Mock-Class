@@ -467,7 +467,7 @@ sub _mock_add_call {
 
     assert_not_null($method) if ASSERT;
 
-    assert_equals('HASH', ref $self->call) if ASSERT;
+    assert_equals('HASH', ref $self->_mock_call) if ASSERT;
     return $self->_mock_call->{$method}++;
 };
 
@@ -531,7 +531,7 @@ sub _mock_method_matching {
 
     assert_not_null($args{method}) if ASSERT;
     assert_not_null($args{attribute}) if ASSERT;
-    assert_equals('ARRAY', $args{args}) if ASSERT;
+    assert_equals('ARRAY', ref $args{args}) if ASSERT;
 
     my $attribute = $args{attribute};
     my $attribute_for_method = $self->$attribute->{$args{method}};
