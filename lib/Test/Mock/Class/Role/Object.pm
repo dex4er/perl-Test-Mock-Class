@@ -28,6 +28,11 @@ use Symbol ();
 use Test::Assert ':all';
 
 
+use constant Exception => 'Test::Mock::Class::Exception';
+
+use Exception::Base Exception;
+
+
 =head1 ATTRIBUTE
 
 =over
@@ -301,6 +306,10 @@ sub mock_expect {
     Exception::Argument->throw(
         message => 'Usage: $mock->mock_expect( METHOD => PARAMS )'
     ) unless defined $method;
+
+    Exception->throw(
+        message => ['Cannot set expected arguments as no method (%s) in class (%s)', $method, $self->meta->name],    
+    ) unless $self->meta->has_method($method);
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
     push @{ $self->_mock_expectation->{$method} } => {
