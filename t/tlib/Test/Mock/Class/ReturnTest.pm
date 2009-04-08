@@ -1,7 +1,8 @@
 package Test::Mock::Class::ReturnTest;
 
 use Moose;
-extends 'Test::Mock::Class::MockTestBase';
+extends 'Test::Unit::TestCase';
+with 'Test::Mock::Class::MockTestRole';
 
 use Test::Assert ':all';
 

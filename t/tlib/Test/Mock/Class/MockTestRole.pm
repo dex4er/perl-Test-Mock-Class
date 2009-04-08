@@ -1,9 +1,6 @@
-package Test::Mock::Class::MockTestBase;
+package Test::Mock::Class::MockTestRole;
 
-use Test::Unit::Lite;
-
-use Moose;
-extends 'Test::Unit::TestCase';
+use Moose::Role;
 
 use Test::Assert ':all';
 
