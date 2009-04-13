@@ -23,7 +23,6 @@ my $build = Module::Build->new(
     optional => {
     },
     build_requires => {
-        'parent'             => 0,
         'Test::Unit::Lite'   => 0.12,
     },
     create_makefile_pl => 'traditional',

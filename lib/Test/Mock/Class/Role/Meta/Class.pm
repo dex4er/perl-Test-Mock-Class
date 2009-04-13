@@ -29,6 +29,10 @@ use Symbol ();
 
 use Test::Assert ':all';
 
+use Exception::Base (
+    '+ignore_package' => [__PACKAGE__],
+);
+
 
 #use namespace::clean -except => 'meta';
 

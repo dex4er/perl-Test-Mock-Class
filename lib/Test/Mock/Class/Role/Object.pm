@@ -30,7 +30,10 @@ use Test::Assert ':all';
 
 use constant Exception => 'Test::Mock::Class::Exception';
 
-use Exception::Base Exception;
+use Exception::Base (
+    Exception,
+    '+ignore_package' => [__PACKAGE__],
+);
 
 
 =head1 ATTRIBUTE
@@ -592,6 +595,11 @@ sub _mock_method_matching {
             $rule->{maximum}, $args{method}, $args{timing}
         ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
 
+        fail([
+            'Expected call count (%d) for method (%s) at call (%d)',
+            $rule->{count}, $args{method}, $args{timing}
+        ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+
         if (ref $rule->{$args{action}} eq 'CODE') {
             return $rule->{$args{action}}->(
                 $args{method}, $args{timing}, @{$args{args}}
@@ -602,10 +610,17 @@ sub _mock_method_matching {
         };
     };
 
-    fail([
-        'Wrong arguments for method (%s) at call (%d)',
-        $args{method}, $args{timing}
-    ]) if $args{attribute} eq '_mock_expectation';
+    # second pass for expectations
+    if ($args{attribute} eq '_mock_expectation') {
+        foreach my $rule (@$attribute_for_method) {
+            next if defined $rule->{at} and $args{timing} != $rule->{at};
+            # fail if it was any expectation for this timing
+            fail([
+                'Wrong arguments for method (%s) at call (%d)',
+                $args{method}, $args{timing}
+            ]);
+        };
+    };
 
     return;
 };
