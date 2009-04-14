@@ -190,6 +190,36 @@ Imports all functions into caller's namespace.
 
 =end umlwiki
 
+=head1 EXAMPLE
+
+The C<Test::Mock::Class> fits perfectly to L<Test::Unit::Lite> tests.  It
+throws immediately an exception if some problem is occured.  It means that
+the test unit is failed if i.e. the mock method is called with wrong
+arguments. 
+
+Example code:
+
+  package My::ExampleTest;
+
+  use Test::Unit::Lite;
+
+  use Moose;
+  extends 'Test::Unit::TestCase';
+
+  use Test::Mock::Class ':all';
+
+  sub test_mock_class {
+      my ($self) = @_;
+  
+      my $mock = mock_anon_class 'IO::File';
+      my $io = $mock->new_object;
+      $io->mock_return( open => 1, args => [qr//, 'r'] );
+  
+      $self->assert_true( $io->open('/etc/passwd', 'r') );
+  
+      $io->mock_tally;
+  };
+
 =head1 SEE ALSO
 
 Mock metaclass API: L<Test::Mock::Class::Role::Meta::Class>,
