@@ -38,18 +38,41 @@ use Exception::Base (
 
 =over
 
-=item mock_base_object_role = "Test::Mock::Class::Role::Object"
+=item mock_base_object_role : Str = "Test::Mock::Class::Role::Object"
 
 Base object role for mock class.  The default is
 L<Test::Mock::Class::Role::Object>.
+
+=cut
+
+has 'mock_base_object_role' => (
+    is      => 'rw',
+    default => 'Test::Mock::Class::Role::Object',
+);
+
+=item mock_ignore_methods_regexp : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
+
+Regexp matches method names which are not created automatically for mock
+class.
+
+=cut
+
+has 'mock_ignore_methods_regexp' => (
+    is      => 'rw',
+    default => sub { qr/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/ },
+);
+
+=item mock_constructor_methods_regexp : RegexpRef = "/^new$/"
+
+Regexp matches method names which are constructors rather than normal methods.
 
 =back
 
 =cut
 
-has 'mock_base_object_role' => (
-    is => 'rw',
-    default => 'Test::Mock::Class::Role::Object',
+has 'mock_constructor_methods_regexp' => (
+    is      => 'rw',
+    default => sub { qr/^new$/ },
 );
 
 
@@ -65,8 +88,9 @@ use namespace::clean -except => 'meta';
 =item create_mock_class(I<name> : Str, :I<class> : Str, I<args> : Hash) : Moose::Meta::Class
 
 Creates new L<Moose::Meta::Class> object which represents named mock class. 
-It automatically adds all methods which exists in original class, except:
-C<can>, C<DEMOLISHALL>, C<DESTROY>, C<DOES>, C<does>, C<isa> and C<VERSION>. 
+It automatically adds all methods which exists in original class, except those
+which matches C<mock_ignore_methods_regexp> attribute.
+
 If C<new> method exists in original class, it is created as constructor.
 
 The method takes additional arguments:
@@ -244,10 +268,10 @@ sub _construct_mock_class {
 
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
-        if ($method =~ /^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/) {
+        if ($method =~ $self->mock_ignore_methods_regexp) {
             # ignore destructor and basic instrospection methods
         }
-        elsif ($method eq 'new') {
+        elsif ($method =~ $self->mock_constructor_methods_regexp) {
             $self->add_mock_constructor($method);
         }
         else {
@@ -322,6 +346,8 @@ sub _get_mock_metaclass_instance_roles {
                         Test::Mock::Class::Role::Meta::Class
  ------------------------------------------------------------------------------
  +mock_base_object_role = "Test::Mock::Class::Role::Object"
+ +mock_ignore_methods_regexp : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
+ +mock_constructor_methods_regexp : RegexpRef = "/^new$/"
  ------------------------------------------------------------------------------
  +create_mock_class(name : Str, :class : Str, args : Hash) : Moose::Meta::Class
  +create_mock_anon_class(:class : Str, args : Hash) : Moose::Meta::Class

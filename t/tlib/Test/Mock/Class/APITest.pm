@@ -18,6 +18,8 @@ sub test_api {
         import
         meta
         mock_base_object_role
+        mock_constructor_methods_regexp
+        mock_ignore_methods_regexp
     } ], \@api );
 };
 
