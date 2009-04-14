@@ -119,7 +119,7 @@ The function returns the metaclass object of new I<mock_class>.
 
     $exports{mock_class} = sub {
         sub ($;$) {
-            return Test::Mock::Class->create_mock_class(
+            return __PACKAGE__->create_mock_class(
                 defined $_[1] ? $_[1] : $_[0] . '::Mock',
                 class => $_[0],
             );
@@ -139,7 +139,7 @@ The function returns the metaobject of new mock class.
 
     $exports{mock_anon_class} = sub {
         sub ($) {
-            return Test::Mock::Class->create_mock_anon_class(
+            return __PACKAGE__->create_mock_anon_class(
                 class => $_[0],
             );
         };

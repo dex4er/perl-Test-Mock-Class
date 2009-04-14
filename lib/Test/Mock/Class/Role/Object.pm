@@ -4,7 +4,7 @@ package Test::Mock::Class::Role::Object;
 
 =head1 NAME
 
-Test::Mock::Class::Role::Object - Role for base object of mock class.
+Test::Mock::Class::Role::Object - Role for base object of mock class
 
 =head1 DESCRIPTION
 
@@ -642,18 +642,19 @@ sub _mock_method_matching {
  #_mock_expectation : HashRef
  #_mock_action : HashRef
  -----------------------------------------------------------------------------
- +mock_return( I<method> : Str, :I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
- +mock_return_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_throw( I<method> : Str, :I<at> : Int, :I<exception> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_throw_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect( I<method> : Str, :I<at> : Int, :I<minimum> : Int, :I<maximum> : Int, :I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_at( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_maximum_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_minimum_call_count( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_never( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
- +mock_expect_at_least_once( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
+ +mock_return( method : Str, :value : Any, :at : Int, :args : ArrayRef[Any] ) : Self
+ +mock_return_at( at : Int, method : Str, :args : ArrayRef[Any] ) : Self
+ +mock_throw( method : Str, :at : Int, :exception : Str, :args : ArrayRef[Any] ) : Self
+ +mock_throw_at( at : Int, method : Str, :args : ArrayRef[Any] ) : Self
+ +mock_expect( method : Str, :at : Int, :minimum : Int, :maximum : Int, :count : Int, :args : ArrayRef[Any] ) : Self
+ +mock_expect_at( I<at> : Int, I<method> : Str, :args : ArrayRef[Any] ) : Self
+ +mock_expect_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self
+ +mock_expect_maximum_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self
+ +mock_expect_minimum_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self
+ +mock_expect_never( method : Str, :args : ArrayRef[Any] ) : Self
+ +mock_expect_once( method : Str, :args : ArrayRef[Any] ) : Self
+ +mock_expect_at_least_once( method : Str, :args : ArrayRef[Any] ) : Self
+ +mock_invoke(method : Str, args : Array) : Any
  +mock_tally() : Self
                                                                               ]
 
