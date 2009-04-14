@@ -28,6 +28,7 @@ use Symbol ();
 use Test::Assert ':all';
 
 
+## no critic ProhibitConstantPragma
 use constant Exception => 'Test::Mock::Class::Exception';
 
 use Exception::Base (
@@ -141,7 +142,7 @@ generate any test assertions as a result of expectations if there is a test
 present.
 
 This method is called in overridden methods of mock class, but you need to
-call it explictly if you constructed own method.
+call it explicitly if you constructed own method.
 
 =cut
 
@@ -311,7 +312,7 @@ sub mock_expect {
     ) unless defined $method;
 
     Exception->throw(
-        message => ['Cannot set expected arguments as no method (%s) in class (%s)', $method, $self->meta->name],    
+        message => ['Cannot set expected arguments as no method (%s) in class (%s)', $method, $self->meta->name],
     ) unless $self->meta->has_method($method);
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
@@ -647,7 +648,7 @@ sub _mock_method_matching {
  +mock_throw( method : Str, :at : Int, :exception : Str, :args : ArrayRef[Any] ) : Self
  +mock_throw_at( at : Int, method : Str, :args : ArrayRef[Any] ) : Self
  +mock_expect( method : Str, :at : Int, :minimum : Int, :maximum : Int, :count : Int, :args : ArrayRef[Any] ) : Self
- +mock_expect_at( I<at> : Int, I<method> : Str, :args : ArrayRef[Any] ) : Self
+ +mock_expect_at( at : Int, method : Str, :args : ArrayRef[Any] ) : Self
  +mock_expect_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self
  +mock_expect_maximum_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self
  +mock_expect_minimum_call_count( method : Str, count : Int, :args : ArrayRef[Any] ) : Self

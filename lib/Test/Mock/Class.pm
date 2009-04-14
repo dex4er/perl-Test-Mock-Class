@@ -193,9 +193,9 @@ Imports all functions into caller's namespace.
 =head1 EXAMPLE
 
 The C<Test::Mock::Class> fits perfectly to L<Test::Unit::Lite> tests.  It
-throws immediately an exception if some problem is occured.  It means that
+throws immediately an exception if some problem is occurred.  It means that
 the test unit is failed if i.e. the mock method is called with wrong
-arguments. 
+arguments.
 
 Example code:
 
@@ -210,13 +210,13 @@ Example code:
 
   sub test_mock_class {
       my ($self) = @_;
-  
+
       my $mock = mock_anon_class 'IO::File';
       my $io = $mock->new_object;
       $io->mock_return( open => 1, args => [qr//, 'r'] );
-  
+
       $self->assert_true( $io->open('/etc/passwd', 'r') );
-  
+
       $io->mock_tally;
   };
 

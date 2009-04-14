@@ -87,7 +87,7 @@ use namespace::clean -except => 'meta';
 
 =item create_mock_class(I<name> : Str, :I<class> : Str, I<args> : Hash) : Moose::Meta::Class
 
-Creates new L<Moose::Meta::Class> object which represents named mock class. 
+Creates new L<Moose::Meta::Class> object which represents named mock class.
 It automatically adds all methods which exists in original class, except those
 which matches C<mock_ignore_methods_regexp> attribute.
 

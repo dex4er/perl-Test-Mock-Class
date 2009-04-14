@@ -4,11 +4,13 @@ metaclass
 metaclass'es
 metaobject                                                                                    
 namespace                                                                                     
-Num                                                                                           
+Num  
+params                                                                                         
 Penet
 Perrick                                                                                       
 PHP                                                                                           
 Piotr
+RegexpRef
 Roszatycki
 SimpleTest                                                                                    
 standalone                                                                                    
