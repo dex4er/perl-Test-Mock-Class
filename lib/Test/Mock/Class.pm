@@ -33,12 +33,18 @@ It's API is inspired by PHP SimpleTest framework.
 =item *
 
 It isn't tied with L<Test::Builder> so it can be used standalone or with any
-xUnit-like framework, i.e. L<Test::Unit::Lite>.
+xUnit-like framework, i.e. L<Test::Unit::Lite>.  Look for
+L<Test::Builder::Mock::Class> if you want to use it with L<Test::Builder>.
 
 =item *
 
-The API for defining mock objects behavior is based on L<Class::MOP> so it
-doesn't clash with API of original objects and is easy expandable.
+The API for creating mock classes is based on L<Class::MOP> so it doesn't
+clash with API of original class and is easy expandable.
+
+=item *
+
+The methods for defining mock object's behavior is prefixed with C<mock_>
+string so it shouldn't clash with original object's methods.
 
 =item *
 
@@ -189,29 +195,17 @@ Imports all functions into caller's namespace.
 Mock metaclass API: L<Test::Mock::Class::Role::Meta::Class>,
 L<Moose::Meta::Class>.
 
+Mock object methods: L<Test::Mock::Class::Role::Object>.
+
+xUnit-like testing: L<Test::Unit::Lite>.
+
+Mock classes for L<Test::Builder>: L<Test::Builder::Mock::Class>.
+
 Other implementations: L<Test::MockObject>, L<Test::MockClass>.
 
 =head1 BUGS
 
 The API is not stable yet and can be changed in future.
-
-=head1 TODO
-
-=over
-
-=item *
-
-Support for L<Moose::Role> based classes.
-
-=item *
-
-Better documentation.
-
-=item *
-
-More tests.
-
-=back
 
 =for readme continue
 

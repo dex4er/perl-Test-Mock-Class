@@ -34,7 +34,26 @@ use Exception::Base (
 );
 
 
-#use namespace::clean -except => 'meta';
+=head1 ATTRIBUTES
+
+=over
+
+=item mock_base_object_role = "Test::Mock::Class::Role::Object"
+
+Base object role for mock class.  The default is
+L<Test::Mock::Class::Role::Object>.
+
+=back
+
+=cut
+
+has 'mock_base_object_role' => (
+    is => 'rw',
+    default => 'Test::Mock::Class::Role::Object',
+);
+
+
+use namespace::clean -except => 'meta';
 
 
 ## no critic RequireCheckingReturnValueOfEval
@@ -45,7 +64,11 @@ use Exception::Base (
 
 =item create_mock_class(I<name> : Str, :I<class> : Str, I<args> : Hash) : Moose::Meta::Class
 
-Creates new L<Moose::Meta::Class> object which represents named mock class.
+Creates new L<Moose::Meta::Class> object which represents named mock class. 
+It automatically adds all methods which exists in original class, except:
+C<can>, C<DEMOLISHALL>, C<DESTROY>, C<DOES>, C<does>, C<isa> and C<VERSION>. 
+If C<new> method exists in original class, it is created as constructor.
+
 The method takes additional arguments:
 
 =over
@@ -199,7 +222,7 @@ sub _construct_mock_class {
 
     Moose::Util::apply_all_roles(
         $self,
-        'Test::Mock::Class::Role::Object',
+        $self->mock_base_object_role,
     );
 
     if (defined $args{class}) {
@@ -221,8 +244,8 @@ sub _construct_mock_class {
 
     foreach my $method (@mock_methods) {
         next if $method eq 'meta';
-        if ($method =~ /^(DEMOLISHALL|DESTROY|DOES|does|isa)$/) {
-            # ignore destructor
+        if ($method =~ /^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/) {
+            # ignore destructor and basic instrospection methods
         }
         elsif ($method eq 'new') {
             $self->add_mock_constructor($method);
@@ -298,6 +321,7 @@ sub _get_mock_metaclass_instance_roles {
 [                                    <<role>>
                         Test::Mock::Class::Role::Meta::Class
  ------------------------------------------------------------------------------
+ +mock_base_object_role = "Test::Mock::Class::Role::Object"
  ------------------------------------------------------------------------------
  +create_mock_class(name : Str, :class : Str, args : Hash) : Moose::Meta::Class
  +create_mock_anon_class(:class : Str, args : Hash) : Moose::Meta::Class

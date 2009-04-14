@@ -81,7 +81,7 @@ has '_mock_action' => (
 );
 
 
-#use namespace::clean -except => 'meta';
+use namespace::clean -except => 'meta';
 
 
 ## no critic RequireCheckingReturnValueOfEval
