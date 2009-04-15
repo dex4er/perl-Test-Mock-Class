@@ -17,7 +17,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.0101';
 
 use Moose::Role;
 
