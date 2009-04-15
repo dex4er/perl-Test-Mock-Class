@@ -18,7 +18,7 @@ my $build = Module::Build->new(
         'perl'               => 5.006,
         'Class::MOP'         => 0.77,
         'Moose'              => 0.56,
-        'Test::Assert'       => 0,
+        'Test::Assert'       => 0.05,
     },
     optional => {
     },
