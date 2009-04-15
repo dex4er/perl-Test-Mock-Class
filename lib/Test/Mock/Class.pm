@@ -28,23 +28,24 @@ The unique features of C<Test::Mock::Class>:
 
 =item *
 
-It's API is inspired by PHP SimpleTest framework.
+Its API is inspired by PHP SimpleTest framework.
 
 =item *
 
 It isn't tied with L<Test::Builder> so it can be used standalone or with any
 xUnit-like framework, i.e. L<Test::Unit::Lite>.  Look for
-L<Test::Builder::Mock::Class> if you want to use it with L<Test::Builder>.
+L<Test::Builder::Mock::Class> if you want to use it with L<Test::Builder>
+(L<Test::More> or L<Test::Simple>).
 
 =item *
 
-The API for creating mock classes is based on L<Class::MOP> so it doesn't
-clash with API of original class and is easy expandable.
+The API for creating mock classes is based on L<Moose> and L<Class::MOP> so it
+doesn't clash with API of original class and is easy expandable.
 
 =item *
 
-The methods for defining mock object's behavior is prefixed with C<mock_>
-string so it shouldn't clash with original object's methods.
+The methods for defining mock object's behavior are prefixed with C<mock_>
+string so they shouldn't clash with original object's methods.
 
 =item *
 
@@ -107,7 +108,7 @@ use namespace::clean -except => 'meta';
 BEGIN {
     my %exports = ();
 
-=item mock_class(I<class> : Str, I<mock_class> : Str = undef) : Moose::Meta::Class
+=item mock_class( I<class> : Str, I<mock_class> : Str = undef ) : Moose::Meta::Class
 
 Creates the concrete mock class based on original I<class>.  If the name of
 I<mock_class> is undefined, its name is created based on name of original
@@ -126,7 +127,7 @@ The function returns the metaclass object of new I<mock_class>.
         };
     };
 
-=item mock_anon_class(I<class> : Str) : Moose::Meta::Class
+=item mock_anon_class( I<class> : Str ) : Moose::Meta::Class
 
 Creates an anonymous mock class based on original I<class>.  The name of this
 class is automatically generated.
@@ -180,20 +181,21 @@ Imports all functions into caller's namespace.
 
 = Class Diagram =
 
-[                          <<utility>>
-                        Test::Mock::Class
- -----------------------------------------------------------------------
- -----------------------------------------------------------------------
- mock_class(class : Str, mock_class : Str = undef) : Moose::Meta::Class
- mock_anon_class(class : Str) : Moose::Meta::Class
-                                                                        ]
+[                                 Test::Mock::Class
+ ----------------------------------------------------------------------------------
+ ----------------------------------------------------------------------------------
+ <<utility>> mock_class(class : Str, mock_class : Str = undef) : Moose::Meta::Class
+ <<utility>> mock_anon_class(class : Str) : Moose::Meta::Class
+                                                                                   ]
+
+[Test::Mock::Class] ---|> [Moose::Meta::Class] [<<role>> Test::Mock::Class::Role::Meta::Class]
 
 =end umlwiki
 
 =head1 EXAMPLE
 
 The C<Test::Mock::Class> fits perfectly to L<Test::Unit::Lite> tests.  It
-throws immediately an exception if some problem is occurred.  It means that
+throws an exception immediately if some problem is occurred.  It means that
 the test unit is failed if i.e. the mock method is called with wrong
 arguments.
 
@@ -206,6 +208,7 @@ Example code:
   use Moose;
   extends 'Test::Unit::TestCase';
 
+  use Test::Assert ':all';
   use Test::Mock::Class ':all';
 
   sub test_mock_class {
@@ -215,7 +218,7 @@ Example code:
       my $io = $mock->new_object;
       $io->mock_return( open => 1, args => [qr//, 'r'] );
 
-      $self->assert_true( $io->open('/etc/passwd', 'r') );
+      assert_true( $io->open('/etc/passwd', 'r') );
 
       $io->mock_tally;
   };
