@@ -38,7 +38,7 @@ use Exception::Base (
 
 =over
 
-=item mock_base_object_role : Str = "Test::Mock::Class::Role::Object"
+=item B<mock_base_object_role> : Str = "Test::Mock::Class::Role::Object"
 
 Base object role for mock class.  The default is
 L<Test::Mock::Class::Role::Object>.
@@ -50,7 +50,7 @@ has 'mock_base_object_role' => (
     default => 'Test::Mock::Class::Role::Object',
 );
 
-=item mock_ignore_methods_regexp : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
+=item B<mock_ignore_methods_regexp> : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
 
 Regexp matches method names which are not created automatically for mock
 class.
@@ -62,7 +62,7 @@ has 'mock_ignore_methods_regexp' => (
     default => sub { qr/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/ },
 );
 
-=item mock_constructor_methods_regexp : RegexpRef = "/^new$/"
+=item B<mock_constructor_methods_regexp> : RegexpRef = "/^new$/"
 
 Regexp matches method names which are constructors rather than normal methods.
 
@@ -85,7 +85,7 @@ use namespace::clean -except => 'meta';
 
 =over
 
-=item create_mock_class( I<name> : Str, :I<class> : Str, I<args> : Hash ) : Moose::Meta::Class
+=item B<create_mock_class>( I<name> : Str, :I<class> : Str, I<args> : Hash ) : Moose::Meta::Class
 
 Creates new L<Moose::Meta::Class> object which represents named mock class.
 It automatically adds all methods which exists in original class, except those
@@ -125,7 +125,7 @@ sub create_mock_class {
 };
 
 
-=item create_mock_anon_class( :I<class> : Str, I<args> : Hash ) : Moose::Meta::Class
+=item B<create_mock_anon_class>( :I<class> : Str, I<args> : Hash ) : Moose::Meta::Class
 
 Creates new L<Moose::Meta::Class> object which represents anonymous mock
 class.  Optional I<class> parameter is a name of original class and its
@@ -157,7 +157,7 @@ sub create_mock_anon_class {
 
 =over
 
-=item add_mock_method( I<method> : Str ) : Self
+=item B<add_mock_method>( I<method> : Str ) : Self
 
 Adds new I<method> to mock class.  The behavior of this method can be changed
 with C<mock_return> and other methods.
@@ -174,7 +174,7 @@ sub add_mock_method {
 };
 
 
-=item add_mock_constructor( I<method> : Str ) : Self
+=item B<add_mock_constructor>( I<method> : Str ) : Self
 
 Adds new constructor to mock class.  This is almost the same as
 C<add_mock_method> but it returns new object rather than defined value.
@@ -196,7 +196,7 @@ sub add_mock_constructor {
 };
 
 
-=item _mock_reinitialize( :I<class> : Str ) : Self
+=item B<_mock_reinitialize>( :I<class> : Str ) : Self
 
 Reinitializes own metaclass with parameters taken from original I<class>.  It
 is necessary if original class has changed C<attribute_metaclass>,
@@ -233,7 +233,7 @@ sub _mock_reinitialize {
 };
 
 
-=item _construct_mock_class( :I<class> : Str, :I<methods> : ArrayRef ) : Self
+=item B<_construct_mock_class>( :I<class> : Str, :I<methods> : ArrayRef ) : Self
 
 Constructs mock class based on original class.  Adds the same methods as in
 original class.  If original class has C<new> method, the constructor with

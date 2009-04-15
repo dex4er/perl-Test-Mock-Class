@@ -108,7 +108,7 @@ use namespace::clean -except => 'meta';
 BEGIN {
     my %exports = ();
 
-=item mock_class( I<class> : Str, I<mock_class> : Str = undef ) : Moose::Meta::Class
+=item B<mock_class>( I<class> : Str, I<mock_class> : Str = undef ) : Moose::Meta::Class
 
 Creates the concrete mock class based on original I<class>.  If the name of
 I<mock_class> is undefined, its name is created based on name of original
@@ -127,7 +127,7 @@ The function returns the metaclass object of new I<mock_class>.
         };
     };
 
-=item mock_anon_class( I<class> : Str ) : Moose::Meta::Class
+=item B<mock_anon_class>( I<class> : Str ) : Moose::Meta::Class
 
 Creates an anonymous mock class based on original I<class>.  The name of this
 class is automatically generated.
