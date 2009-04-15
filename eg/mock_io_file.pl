@@ -9,7 +9,7 @@ use constant::boolean;
 use Test::Mock::Class ':all';
 use Test::Assert ':all';
 
-mock_class 'IO::Moose::File' => 'IO::File::Mock';
+mock_class 'IO::File' => 'IO::File::Mock';
 
 my $io = IO::File::Mock->new;
 $io->mock_return( open => TRUE, args => [qr//, 'r'] );
