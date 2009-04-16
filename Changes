@@ -3,6 +3,7 @@
 
 Fixes:
 
+* Requires Class::Inspector.
 * This module is under LGPL only.
 
 ------------------------------------------------------------------------
