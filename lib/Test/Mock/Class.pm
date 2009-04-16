@@ -24,7 +24,7 @@ or impossible to incorporate into a unit test.
 
 The unique features of C<Test::Mock::Class>:
 
-=over
+=over 2
 
 =item *
 
@@ -79,15 +79,19 @@ use Class::MOP 0.77;
 
 =head1 INHERITANCE
 
-=over
+=over 2
 
-=item extends L<Moose::Meta::Class>
+=item *
+
+extends L<Moose::Meta::Class>
 
 =cut
 
 extends 'Moose::Meta::Class';
 
-=item with L<Test::Mock::Class::Role::Meta::Class>
+=item *
+
+with L<Test::Mock::Class::Role::Meta::Class>
 
 =back
 
