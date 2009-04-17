@@ -1,9 +1,11 @@
-package Test::Mock::Class::AnonClassWithRoleTest;
+package Test::Mock::Class::GenerateAnonWithRoleTest;
 
 use Test::Unit::Lite;
 
 use Moose;
 extends 'Test::Unit::TestCase';
+
+use Test::Assert ':all';
 
 sub test_mock_anon_class_with_role {
     my $metamock = Test::Mock::Class->create_mock_anon_class(
@@ -12,10 +14,23 @@ sub test_mock_anon_class_with_role {
     );
     assert_true($metamock->isa('Moose::Meta::Class'));
     my $mock = $metamock->new_object;
+
+    use YAML;
+    die Dump (map { $_->name } $mock->meta->calculate_all_roles);
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     assert_true($mock->does('Test::Mock::Class::RoleTestRole'));
     assert_true($mock->test_role_method);
 };
 
+sub test_mock_anon_empty_class_with_role {
+    my $metamock = Test::Mock::Class->create_mock_anon_class(
+        roles => ['Test::Mock::Class::RoleTestRole'],
+    );
+    assert_true($metamock->isa('Moose::Meta::Class'));
+    my $mock = $metamock->new_object;
+    assert_true($mock->does('Test::Mock::Class::Role::Object'));
+    assert_true($mock->does('Test::Mock::Class::RoleTestRole'));
+    assert_true($mock->test_role_method);
+};
 
 1;

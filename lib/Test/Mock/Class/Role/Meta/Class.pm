@@ -212,6 +212,10 @@ sub _mock_reinitialize {
     if (defined $args{class}) {
         Class::MOP::load_class($args{class});
         if (my %metaclasses = $self->_get_mock_metaclasses($args{class})) {
+            # get roles list
+            my @roles = $self->calculate_all_roles;
+
+            # reconstruct metaclass
             my $new_meta = $args{class}->meta;
             my $new_self = $self->reinitialize(
                 $self->name,
@@ -226,6 +230,9 @@ sub _mock_reinitialize {
 
             Class::MOP::store_metaclass_by_name( $self->name, $self );
             Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;
+
+            # reapply roles
+            map { $self->add_role($_) } @roles;
         };
     };
 
@@ -286,6 +293,8 @@ sub _construct_mock_class {
 sub _get_mock_methods {
     my ($self, $class) = @_;
 
+    return () unless defined $class;
+
     if ($class->can('meta')) {
         return $class->meta->get_all_method_names;
     };
@@ -297,6 +306,8 @@ sub _get_mock_methods {
 
 sub _get_mock_superclasses {
     my ($self, $class) = @_;
+
+    return () unless defined $class;
 
     return $class->can('meta')
            ? $class->meta->superclasses
