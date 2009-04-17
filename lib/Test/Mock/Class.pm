@@ -247,11 +247,11 @@ Mock classes for L<Test::Builder>: L<Test::Builder::Mock::Class>.
 
 Other implementations: L<Test::MockObject>, L<Test::MockClass>.
 
+=for readme continue
+
 =head1 BUGS
 
 The API is not stable yet and can be changed in future.
-
-=for readme continue
 
 =head1 AUTHOR
 
