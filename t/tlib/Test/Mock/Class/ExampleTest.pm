@@ -58,3 +58,5 @@ sub test_meta_mock_class {
     # close was not called
     $io->mock_tally;
 };
+
+1;

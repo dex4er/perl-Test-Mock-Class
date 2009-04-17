@@ -146,7 +146,7 @@ The constructor returns metaclass object.
 
 sub create_mock_anon_class {
     my ($class, %args) = @_;
-    my $self = $class->create_anon_class;
+    my $self = $class->create_anon_class(%args);
     $self = $self->_mock_reinitialize(%args);
     $self->_construct_mock_class(%args);
     return $self;

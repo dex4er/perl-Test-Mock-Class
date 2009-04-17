@@ -1,4 +1,12 @@
 ------------------------------------------------------------------------
+0.02 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-17
+
+Changes:
+
+* Method "create_mock_anon_class" accepts "role" argument.
+* Function "mock_anon_class" has optional argument.
+
+------------------------------------------------------------------------
 0.0102 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-16
 
 Fixes:
