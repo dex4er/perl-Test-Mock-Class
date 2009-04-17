@@ -13,10 +13,8 @@ sub test_mock_anon_class_with_role {
         roles => ['Test::Mock::Class::RoleTestRole'],
     );
     assert_true($metamock->isa('Moose::Meta::Class'));
-    my $mock = $metamock->new_object;
 
-    use YAML;
-    die Dump (map { $_->name } $mock->meta->calculate_all_roles);
+    my $mock = $metamock->new_object;
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     assert_true($mock->does('Test::Mock::Class::RoleTestRole'));
     assert_true($mock->test_role_method);
@@ -27,6 +25,7 @@ sub test_mock_anon_empty_class_with_role {
         roles => ['Test::Mock::Class::RoleTestRole'],
     );
     assert_true($metamock->isa('Moose::Meta::Class'));
+
     my $mock = $metamock->new_object;
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     assert_true($mock->does('Test::Mock::Class::RoleTestRole'));

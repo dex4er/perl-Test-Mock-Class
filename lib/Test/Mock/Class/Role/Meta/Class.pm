@@ -256,11 +256,7 @@ sub _construct_mock_class {
         $self->mock_base_object_role,
     );
 
-    if (defined $args{class}) {
-        $self->superclasses(
-            $self->_get_mock_superclasses($args{class}),
-       );
-    };
+    $self->superclasses( $self->_get_mock_superclasses($args{class}) );
 
     my @methods = defined $args{methods} ? @{ $args{methods} } : ();
 
@@ -307,11 +303,18 @@ sub _get_mock_methods {
 sub _get_mock_superclasses {
     my ($self, $class) = @_;
 
-    return () unless defined $class;
+    return ('Moose::Object') unless defined $class;
 
-    return $class->can('meta')
-           ? $class->meta->superclasses
-           : @{ *{Symbol::qualify_to_ref($class . '::ISA')} };
+    my @superclasses = (
+        $class->can('meta')
+        ? $class->meta->superclasses
+        : @{ *{Symbol::qualify_to_ref($class . '::ISA')} },
+    );
+
+    unshift @superclasses, 'Moose::Object'
+        unless grep { $_ eq 'Moose::Object' } @superclasses;
+
+    return @superclasses;
 };
 
 
