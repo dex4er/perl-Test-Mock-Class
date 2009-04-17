@@ -232,7 +232,7 @@ sub _mock_reinitialize {
             Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;
 
             # reapply roles
-            map { $self->add_role($_) } @roles;
+            $self->add_role($_) foreach @roles;
         };
     };
 
