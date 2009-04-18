@@ -91,4 +91,11 @@ sub test_maximum_calls_satisfied_by_no_calls {
     $mock->mock_expect_maximum_call_count('a_method', 1);
 };
 
+sub test_once_with_args {
+    my ($self) = @_;
+    my $mock = $self->mock;
+    $mock->mock_expect_once('a_method', args => [1, 2, 3]);
+    $mock->a_method(1, 2, 3);
+};
+
 1;
