@@ -22,7 +22,6 @@ our $VERSION = '0.02';
 use Moose::Role;
 
 
-use Class::Inspector;
 use Symbol ();
 
 use Test::Assert ':all';

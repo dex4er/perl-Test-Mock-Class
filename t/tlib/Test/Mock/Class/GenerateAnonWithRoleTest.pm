@@ -17,7 +17,12 @@ sub test_mock_anon_class_with_role {
     my $mock = $metamock->new_object;
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     assert_true($mock->does('Test::Mock::Class::RoleTestRole'));
+    $mock->mock_expect_once('test_role_method');
+    $mock->mock_return('test_role_method', 1);
+
     assert_true($mock->test_role_method);
+
+    $mock->mock_tally;
 };
 
 sub test_mock_anon_empty_class_with_role {
@@ -29,7 +34,12 @@ sub test_mock_anon_empty_class_with_role {
     my $mock = $metamock->new_object;
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     assert_true($mock->does('Test::Mock::Class::RoleTestRole'));
+    $mock->mock_expect_once('test_role_method');
+    $mock->mock_return('test_role_method', 1);
+
     assert_true($mock->test_role_method);
+
+    $mock->mock_tally;
 };
 
 1;

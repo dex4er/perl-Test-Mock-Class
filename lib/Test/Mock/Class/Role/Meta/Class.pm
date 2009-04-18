@@ -24,7 +24,6 @@ use Moose::Role;
 
 use Moose::Util;
 
-use Class::Inspector;
 use Symbol ();
 
 use Test::Assert ':all';
@@ -50,7 +49,7 @@ has 'mock_base_object_role' => (
     default => 'Test::Mock::Class::Role::Object',
 );
 
-=item B<mock_ignore_methods_regexp> : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
+=item B<mock_ignore_methods_regexp> : RegexpRef = "/^(_?mock_|(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$)/"
 
 Regexp matches method names which are not created automatically for mock
 class.
@@ -59,7 +58,7 @@ class.
 
 has 'mock_ignore_methods_regexp' => (
     is      => 'rw',
-    default => sub { qr/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/ },
+    default => sub { qr/^(_?mock_|(can|DEMOLISHALL|DESTROY|DOES|does|meta|isa|VERSION)$)/ },
 );
 
 =item B<mock_constructor_methods_regexp> : RegexpRef = "/^new$/"
@@ -263,14 +262,13 @@ sub _construct_mock_class {
     my @mock_methods = do {
         my %uniq = map { $_ => 1 }
                    (
-                       $self->_get_mock_methods($args{class}),
+                       $self->get_all_method_names,
                        @methods,
                    );
         keys %uniq;
     };
 
     foreach my $method (@mock_methods) {
-        next if $method eq 'meta';
         if ($method =~ $self->mock_ignore_methods_regexp) {
             # ignore destructor and basic instrospection methods
         }
@@ -286,20 +284,6 @@ sub _construct_mock_class {
 };
 
 
-sub _get_mock_methods {
-    my ($self, $class) = @_;
-
-    return () unless defined $class;
-
-    if ($class->can('meta')) {
-        return $class->meta->get_all_method_names;
-    };
-
-    my $methods = Class::Inspector->methods($class);
-    return defined $methods ? @$methods : ();
-};
-
-
 sub _get_mock_superclasses {
     my ($self, $class) = @_;
 
@@ -308,11 +292,13 @@ sub _get_mock_superclasses {
     my @superclasses = (
         $class->can('meta')
         ? $class->meta->superclasses
-        : @{ *{Symbol::qualify_to_ref($class . '::ISA')} },
+        : @{ *{Symbol::qualify_to_ref('ISA', $class)} },
     );
 
     unshift @superclasses, 'Moose::Object'
         unless grep { $_ eq 'Moose::Object' } @superclasses;
+
+    unshift @superclasses, $class;
 
     return @superclasses;
 };
