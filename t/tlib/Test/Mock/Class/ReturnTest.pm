@@ -111,4 +111,11 @@ sub test_method_interference {
     assert_equals('aaa', $mock->another_method);
 };
 
+sub test_coderef {
+    my ($self) = @_;
+    my $mock = $self->mock;
+    $mock->mock_return('a_method', sub { @_ });
+    assert_deep_equals(['a_method', 0, 42], [$mock->a_method(42)]);
+};
+
 1;
