@@ -18,6 +18,7 @@ t/tlib/Test/Mock/Class/ExampleTest.pm
 t/tlib/Test/Mock/Class/ExpectationsTest.pm
 t/tlib/Test/Mock/Class/ExpectationsThatPassTest.pm
 t/tlib/Test/Mock/Class/GenerateAnonTest.pm
+t/tlib/Test/Mock/Class/GenerateAnonWithRoleTest.pm
 t/tlib/Test/Mock/Class/GenerateTest.pm
 t/tlib/Test/Mock/Class/MockBaseTestRole.pm
 t/tlib/Test/Mock/Class/MockTallyTestRole.pm
@@ -25,6 +26,7 @@ t/tlib/Test/Mock/Class/MockTestRole.pm
 t/tlib/Test/Mock/Class/ReturnTest.pm
 t/tlib/Test/Mock/Class/Role/Meta/Class/APITest.pm
 t/tlib/Test/Mock/Class/Role/Object/APITest.pm
+t/tlib/Test/Mock/Class/RoleTestRole.pm
 t/tlib/Test/Mock/Class/Test/Dummy.pm
 t/tlib/Test/Mock/Class/ThrowingTest.pm
 t/tlib/Test/Mock/Class/UseTest.pm
