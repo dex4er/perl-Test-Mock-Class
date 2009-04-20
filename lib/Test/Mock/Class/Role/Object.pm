@@ -22,6 +22,7 @@ our $VERSION = '0.02';
 use Moose::Role;
 
 
+use English '-no_match_vars';
 use Symbol ();
 
 use Test::Assert ':all';
@@ -545,6 +546,8 @@ sub _mock_check_expectations {
     return if not defined $rules_for_method
               or (ref $rules_for_method || '') ne 'ARRAY';
 
+    my $e;
+
     RULE:
     foreach my $rule (@$rules_for_method) {
         if (defined $rule->{at}) {
@@ -584,23 +587,36 @@ sub _mock_check_expectations {
 
         $rule->{call} ++;
 
-        fail([
-            'Maximum call count (%d) for method (%s) at call (%d)',
-            $rule->{maximum}, $method, $timing
-        ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+        eval {
+            fail([
+                'Maximum call count (%d) for method (%s) at call (%d)',
+                $rule->{maximum}, $method, $timing
+            ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+    
+            fail([
+                'Expected call count (%d) for method (%s) at call (%d)',
+                $rule->{count}, $method, $timing
+            ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+    
+            if (ref $rule->{assertion} eq 'CODE') {
+                return $rule->{assertion}->(
+                    $method, $timing, @args
+                );
+            }
+            elsif (defined $rule->{assertion}) {
+                fail($rule->{assertion});
+            };
+        };
+        $e ||= $EVAL_ERROR if $EVAL_ERROR;
+    };
 
-        fail([
-            'Expected call count (%d) for method (%s) at call (%d)',
-            $rule->{count}, $method, $timing
-        ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
-
-        if (ref $rule->{assertion} eq 'CODE') {
-            return $rule->{assertion}->(
-                $method, $timing, @args
-            );
+    # rethrow an exception or simple message
+    if ($e) {
+        if ( blessed $e and $e->isa('Exception::Base') ) {
+            $e->throw;
         }
-        elsif (defined $rule->{assertion}) {
-            return $rule->{assertion};
+        else {
+            die $e;
         };
     };
 
