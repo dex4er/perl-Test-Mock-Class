@@ -136,9 +136,12 @@ sub mock_tally {
 
 =item B<mock_invoke>( I<method> : Str, I<args> : Array ) : Any
 
-Returns the expected value for the method name and checks expectations.  Will
-generate any test assertions as a result of expectations if there is a test
-present.
+Increases the call counter and returns the expected value for the method name
+and checks expectations.  Will generate any test assertions as a result of
+expectations if there is a test present.
+
+If more that one expectation matches, all of them are checked.  If one of them
+fails, the whole C<mock_invoke> method is failed.
 
 This method is called in overridden methods of mock class, but you need to
 call it explicitly if you constructed own method.
@@ -454,13 +457,71 @@ sub _mock_emulate_call {
     assert_not_null($method) if ASSERT;
     assert_not_null($timing) if ASSERT;
 
-    return $self->_mock_method_matching(
-        attribute => '_mock_action',
-        action    => 'value',
-        method    => $method,
-        timing    => $timing,
-        args      => \@args,
-    );
+    my $rules_for_method = $self->_mock_action->{$method};
+
+    return if not defined $rules_for_method
+              or (ref $rules_for_method || '') ne 'ARRAY';
+
+    RULE:
+    foreach my $rule (@$rules_for_method) {
+        if (defined $rule->{at}) {
+            next unless $timing == $rule->{at};
+        };
+
+        if (exists $rule->{args}) {
+            my @rule_args = (ref $rule->{args} || '') eq 'ARRAY'
+                            ? @{ $rule->{args} }
+                            : ( $rule->{args} );
+
+            # number of args matches?
+            next unless @args == @rule_args;
+
+            # iterate args
+            foreach my $i (0 .. @rule_args - 1) {
+                my $rule_arg = $rule_args[$i];
+                if ((ref $rule_arg || '') eq 'Regexp') {
+                    next RULE unless $args[$i] =~ $rule_arg;
+                }
+                elsif (ref $rule_arg) {
+                    # TODO: use Test::Deep::NoTest
+                    eval {
+                        assert_deep_equals($args[$i], $rule_arg);
+                    };
+                    next RULE if $@;
+                }
+                else {
+                    # TODO: do not use eval
+                    eval {
+                        assert_equals($args[$i], $rule_arg);
+                    };
+                    next RULE if $@;
+                };
+            };
+        };
+
+        $rule->{call} ++;
+
+        fail([
+            'Maximum call count (%d) for method (%s) at call (%d)',
+            $rule->{maximum}, $method, $timing
+        ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+
+        fail([
+            'Expected call count (%d) for method (%s) at call (%d)',
+            $rule->{count}, $method, $timing
+        ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+
+        if (ref $rule->{value} eq 'CODE') {
+            return $rule->{value}->(
+                $method, $timing, @args
+            );
+        }
+        elsif (defined $rule->{value}) {
+            return $rule->{value};
+        };
+    };
+
+    return;
 };
 
 
@@ -491,66 +552,15 @@ sub _mock_check_expectations {
     assert_not_null($method) if ASSERT;
     assert_not_null($timing) if ASSERT;
 
-    return $self->_mock_method_matching(
-        attribute => '_mock_expectation',
-        action    => 'assertion',
-        method    => $method,
-        timing    => $timing,
-        args      => \@args,
-    );
-};
+    my $rules_for_method = $self->_mock_expectation->{$method};
 
-
-=item B<_mock_method_matching>( I<attribute> : Str, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array ) : Any
-
-Do matching for method and do some action if succeed.
-
-This private method is shared between C<_mock_emulate_call> and
-C<_mock_check_expectations> methods.
-
-=over
-
-=item attribute
-
-Name of metaclass'es attribute which contains matching.
-
-=item action
-
-Name of slot which contains returns value or assertion.
-
-=item method
-
-Method name.
-
-=item timing
-
-Current call number.
-
-=item args
-
-Calling arguments to match.
-
-=back
-
-=cut
-
-sub _mock_method_matching {
-    my ($self, %args) = @_;
-
-    assert_not_null($args{method}) if ASSERT;
-    assert_not_null($args{attribute}) if ASSERT;
-    assert_equals('ARRAY', ref $args{args}) if ASSERT;
-
-    my $attribute = $args{attribute};
-    my $attribute_for_method = $self->$attribute->{$args{method}};
-
-    return if not defined $attribute_for_method
-              or (ref $attribute_for_method || '') ne 'ARRAY';
+    return if not defined $rules_for_method
+              or (ref $rules_for_method || '') ne 'ARRAY';
 
     RULE:
-    foreach my $rule (@$attribute_for_method) {
+    foreach my $rule (@$rules_for_method) {
         if (defined $rule->{at}) {
-            next unless $args{timing} == $rule->{at};
+            next unless $timing == $rule->{at};
         };
 
         if (exists $rule->{args}) {
@@ -559,25 +569,25 @@ sub _mock_method_matching {
                             : ( $rule->{args} );
 
             # number of args matches?
-            next unless @{$args{args}} == @rule_args;
+            next unless @args == @rule_args;
 
             # iterate args
             foreach my $i (0 .. @rule_args - 1) {
                 my $rule_arg = $rule_args[$i];
                 if ((ref $rule_arg || '') eq 'Regexp') {
-                    next RULE unless $args{args}->[$i] =~ $rule_arg;
+                    next RULE unless $args[$i] =~ $rule_arg;
                 }
                 elsif (ref $rule_arg) {
                     # TODO: use Test::Deep::NoTest
                     eval {
-                        assert_deep_equals($args{args}->[$i], $rule_arg);
+                        assert_deep_equals($args[$i], $rule_arg);
                     };
                     next RULE if $@;
                 }
                 else {
                     # TODO: do not use eval
                     eval {
-                        assert_equals($args{args}->[$i], $rule_arg);
+                        assert_equals($args[$i], $rule_arg);
                     };
                     next RULE if $@;
                 };
@@ -588,34 +598,32 @@ sub _mock_method_matching {
 
         fail([
             'Maximum call count (%d) for method (%s) at call (%d)',
-            $rule->{maximum}, $args{method}, $args{timing}
+            $rule->{maximum}, $method, $timing
         ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
 
         fail([
             'Expected call count (%d) for method (%s) at call (%d)',
-            $rule->{count}, $args{method}, $args{timing}
+            $rule->{count}, $method, $timing
         ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
 
-        if (ref $rule->{$args{action}} eq 'CODE') {
-            return $rule->{$args{action}}->(
-                $args{method}, $args{timing}, @{$args{args}}
+        if (ref $rule->{assertion} eq 'CODE') {
+            return $rule->{assertion}->(
+                $method, $timing, @args
             );
         }
-        elsif (defined $rule->{$args{action}}) {
-            return $rule->{$args{action}};
+        elsif (defined $rule->{assertion}) {
+            return $rule->{assertion};
         };
     };
 
     # second pass for expectations
-    if ($args{attribute} eq '_mock_expectation') {
-        foreach my $rule (@$attribute_for_method) {
-            next if defined $rule->{at} and $args{timing} != $rule->{at};
-            # fail if it was any expectation for this timing
-            fail([
-                'Wrong arguments for method (%s) at call (%d)',
-                $args{method}, $args{timing}
-            ]);
-        };
+    foreach my $rule (@$rules_for_method) {
+        next if defined $rule->{at} and $timing != $rule->{at};
+        # fail if it was any expectation for this timing
+        fail([
+            'Wrong arguments for method (%s) at call (%d)',
+            $method, $timing
+        ]);
     };
 
     return;
