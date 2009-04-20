@@ -98,4 +98,13 @@ sub test_once_with_args {
     $mock->a_method(1, 2, 3);
 };
 
+sub test_count_without_args_and_once_with_args {
+    my ($self) = @_;
+    my $mock = $self->mock;
+    $mock->mock_expect_once('a_method', args => [1, 2, 3]);
+    $mock->mock_expect_call_count('a_method', 2);
+    $mock->a_method(1, 2, 3);
+    $mock->a_method(4, 5, 6);
+};
+
 1;
