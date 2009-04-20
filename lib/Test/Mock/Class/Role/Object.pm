@@ -499,18 +499,6 @@ sub _mock_emulate_call {
             };
         };
 
-        $rule->{call} ++;
-
-        fail([
-            'Maximum call count (%d) for method (%s) at call (%d)',
-            $rule->{maximum}, $method, $timing
-        ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
-
-        fail([
-            'Expected call count (%d) for method (%s) at call (%d)',
-            $rule->{count}, $method, $timing
-        ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
-
         if (ref $rule->{value} eq 'CODE') {
             return $rule->{value}->(
                 $method, $timing, @args
