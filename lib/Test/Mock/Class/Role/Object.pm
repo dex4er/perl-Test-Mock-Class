@@ -22,7 +22,6 @@ our $VERSION = '0.02';
 use Moose::Role;
 
 
-use English '-no_match_vars';
 use Symbol ();
 
 use Test::Assert ':all';
@@ -316,7 +315,7 @@ sub mock_expect {
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
     push @{ $self->_mock_expectation->{$method} } => {
-        assertion => 1,
+#        assertion => 1,
         %params,
     };
 
@@ -587,42 +586,34 @@ sub _mock_check_expectations {
 
         $rule->{call} ++;
 
-        eval {
+#        eval {
             fail([
                 'Maximum call count (%d) for method (%s) at call (%d)',
                 $rule->{maximum}, $method, $timing
             ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
-    
+
             fail([
                 'Expected call count (%d) for method (%s) at call (%d)',
                 $rule->{count}, $method, $timing
             ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
-    
-            if (ref $rule->{assertion} eq 'CODE') {
-                return $rule->{assertion}->(
-                    $method, $timing, @args
-                );
-            }
-            elsif (defined $rule->{assertion}) {
-                fail($rule->{assertion});
+
+            if (defined $rule->{assertion}) {
+                if (ref $rule->{assertion} eq 'CODE') {
+                    fail( $rule->{assertion}->($method, $timing, @args) );
+                }
+                else {
+                    fail( $rule->{assertion} );
+                };
             };
         };
-        $e ||= $EVAL_ERROR if $EVAL_ERROR;
-    };
-
-    # rethrow an exception or simple message
-    if ($e) {
-        if ( blessed $e and $e->isa('Exception::Base') ) {
-            $e->throw;
-        }
-        else {
-            die $e;
-        };
-    };
+#        die if $@;
+#    };
 
     # second pass for expectations
     foreach my $rule (@$rules_for_method) {
+        next unless defined $rule->{args};
         next if defined $rule->{at} and $timing != $rule->{at};
+        next if $rule->{call};
         # fail if it was any expectation for this timing
         fail([
             'Wrong arguments for method (%s) at call (%d)',
