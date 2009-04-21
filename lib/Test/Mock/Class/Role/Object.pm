@@ -29,9 +29,11 @@ use Test::Assert ':all';
 
 ## no critic ProhibitConstantPragma
 use constant Exception => 'Test::Mock::Class::Exception';
+use English '-no_match_vars';
 
 use Exception::Base (
     Exception,
+    'Exception::Fatal',
     '+ignore_package' => [__PACKAGE__],
 );
 
@@ -487,14 +489,14 @@ sub _mock_emulate_call {
                     eval {
                         assert_deep_equals($args[$i], $rule_arg);
                     };
-                    next RULE if $@;
+                    next RULE if $EVAL_ERROR;
                 }
                 else {
                     # TODO: do not use eval
                     eval {
                         assert_equals($args[$i], $rule_arg);
                     };
-                    next RULE if $@;
+                    next RULE if $EVAL_ERROR;
                 };
             };
         };
@@ -572,21 +574,21 @@ sub _mock_check_expectations {
                     eval {
                         assert_deep_equals($args[$i], $rule_arg);
                     };
-                    next RULE if $@;
+                    next RULE if $EVAL_ERROR;
                 }
                 else {
                     # TODO: do not use eval
                     eval {
                         assert_equals($args[$i], $rule_arg);
                     };
-                    next RULE if $@;
+                    next RULE if $EVAL_ERROR;
                 };
             };
         };
 
         $rule->{call} ++;
 
-#        eval {
+        eval {
             fail([
                 'Maximum call count (%d) for method (%s) at call (%d)',
                 $rule->{maximum}, $method, $timing
@@ -606,15 +608,17 @@ sub _mock_check_expectations {
                 };
             };
         };
-#        die if $@;
-#    };
+        $e ||= Exception::Fatal->catch if $EVAL_ERROR;
+    };
+
+    $e->throw if $e;
 
     # second pass for expectations
     foreach my $rule (@$rules_for_method) {
         next unless defined $rule->{args};
-        next if defined $rule->{at} and $timing != $rule->{at};
         next if $rule->{call};
-        # fail if it was any expectation for this timing
+        next if defined $rule->{at} and $timing != $rule->{at};
+        # fail if it was unused expectation for this timing
         fail([
             'Wrong arguments for method (%s) at call (%d)',
             $method, $timing
@@ -664,6 +668,9 @@ sub _mock_check_expectations {
 L<Test::Mock::Class>.
 
 =head1 BUGS
+
+The expectations and return values should be refactored as objects rather than
+complex structure.
 
 The API is not stable yet and can be changed in future.
 

@@ -18,6 +18,8 @@ my $build = Module::Build->new(
         'perl'               => 5.006,
         'namespace::clean'   => 0,
         'Class::MOP'         => 0.77,
+        'Exception::Base'    => 0,
+        'Exception::Fatal'   => 0,
         'Moose'              => 0.56,
         'Test::Assert'       => 0.05,
     },
