@@ -552,51 +552,53 @@ sub _mock_check_expectations {
     RULE:
     foreach my $rule (@$rules_for_method) {
         if (defined $rule->{at}) {
-            next unless $timing == $rule->{at};
+            next RULE unless $timing == $rule->{at};
         };
-
-        if (exists $rule->{args}) {
-            my @rule_args = (ref $rule->{args} || '') eq 'ARRAY'
-                            ? @{ $rule->{args} }
-                            : ( $rule->{args} );
-
-            # number of args matches?
-            next unless @args == @rule_args;
-
-            # iterate args
-            foreach my $i (0 .. @rule_args - 1) {
-                my $rule_arg = $rule_args[$i];
-                if ((ref $rule_arg || '') eq 'Regexp') {
-                    assert_matches($rule_arg, $args[$i]);
-                }
-                elsif (ref $rule_arg) {
-                    assert_deep_equals($rule_arg, $args[$i]);
-                }
-                else {
-                    assert_equals($rule_arg, $args[$i]);
-                };
-            };
-        };
-
-        $rule->{call} ++;
 
         eval {
-            fail( [
-                'Maximum call count (%d) for method (%s) at call (%d)',
-                $rule->{maximum}, $method, $timing
-            ] ) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+            TRY: {
+                if (exists $rule->{args}) {
+                    my @rule_args = (ref $rule->{args} || '') eq 'ARRAY'
+                                    ? @{ $rule->{args} }
+                                    : ( $rule->{args} );
 
-            fail( [
-                'Expected call count (%d) for method (%s) at call (%d)',
-                $rule->{count}, $method, $timing
-            ] ) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+                    # number of args matches?
+                    next TRY unless @args == @rule_args;
 
-            if (defined $rule->{assertion}) {
-                if (ref $rule->{assertion} eq 'CODE') {
-                    fail( $rule->{assertion}->($method, $timing, @args) );
-                }
-                else {
-                    fail( $rule->{assertion} );
+                    # iterate args
+                    foreach my $i (0 .. @rule_args - 1) {
+                        my $rule_arg = $rule_args[$i];
+                        if ((ref $rule_arg || '') eq 'Regexp') {
+                            assert_matches($rule_arg, $args[$i]);
+                        }
+                        elsif (ref $rule_arg) {
+                            assert_deep_equals($rule_arg, $args[$i]);
+                        }
+                        else {
+                            assert_equals($rule_arg, $args[$i]);
+                        };
+                    };
+                };
+
+                $rule->{call} ++;
+
+                fail( [
+                    'Maximum call count (%d) for method (%s) at call (%d)',
+                    $rule->{maximum}, $method, $timing
+                ] ) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+
+                fail( [
+                    'Expected call count (%d) for method (%s) at call (%d)',
+                    $rule->{count}, $method, $timing
+                ] ) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+
+                if (defined $rule->{assertion}) {
+                    if (ref $rule->{assertion} eq 'CODE') {
+                        fail( $rule->{assertion}->($method, $timing, @args) );
+                    }
+                    else {
+                        fail( $rule->{assertion} );
+                    };
                 };
             };
         };

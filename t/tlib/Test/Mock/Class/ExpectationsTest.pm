@@ -131,7 +131,6 @@ sub test_failed_arguments_with_two_calls {
     assert_raises( { -isa => 'Exception::Assertion', reason => qr/Expected/ }, sub {
         $mock->a_method('that');
     } );
-    use YAML; die Dump $mock;
 };
 
 sub test_wildcards_are_translated_to_anything_expectations {
