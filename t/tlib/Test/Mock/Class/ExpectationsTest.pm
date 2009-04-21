@@ -123,6 +123,16 @@ sub test_failed_arguments {
     } );
 };
 
+sub test_failed_arguments_with_two_calls {
+    my ($self) = @_;
+    my $mock = $self->mock;
+    $mock->mock_expect('a_method', args => ['this']);
+    $mock->a_method('this');
+    assert_raises( qr/Wrong arguments for method/, sub {
+        $mock->a_method('that');
+    } );
+};
+
 sub test_wildcards_are_translated_to_anything_expectations {
     my ($self) = @_;
     my $mock = $self->mock;
