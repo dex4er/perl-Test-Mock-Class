@@ -15,7 +15,9 @@ Changes:
   $m->mock_expect_call_count('method', 2);
   $m->method(1, 2, 3);  # matches first expectation
   $m->method();
-  $m->mock_tally();     # matches second expectation       
+  $m->mock_tally();     # matches second expectation 
+
+* Test::Assert's assertions are used to check if arguments matches.      
 
 ------------------------------------------------------------------------
 0.02 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-18

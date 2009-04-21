@@ -567,21 +567,13 @@ sub _mock_check_expectations {
             foreach my $i (0 .. @rule_args - 1) {
                 my $rule_arg = $rule_args[$i];
                 if ((ref $rule_arg || '') eq 'Regexp') {
-                    next RULE unless $args[$i] =~ $rule_arg;
+                    assert_matches($rule_arg, $args[$i]);
                 }
                 elsif (ref $rule_arg) {
-                    # TODO: use Test::Deep::NoTest
-                    eval {
-                        assert_deep_equals($args[$i], $rule_arg);
-                    };
-                    next RULE if $EVAL_ERROR;
+                    assert_deep_equals($rule_arg, $args[$i]);
                 }
                 else {
-                    # TODO: do not use eval
-                    eval {
-                        assert_equals($args[$i], $rule_arg);
-                    };
-                    next RULE if $EVAL_ERROR;
+                    assert_equals($rule_arg, $args[$i]);
                 };
             };
         };
@@ -612,18 +604,6 @@ sub _mock_check_expectations {
     };
 
     $e->throw if $e;
-
-    # second pass for expectations
-    foreach my $rule (@$rules_for_method) {
-        next unless defined $rule->{args};
-        next if $rule->{call};
-        next if defined $rule->{at} and $timing != $rule->{at};
-        # fail if it was unused expectation for this timing
-        fail([
-            'Wrong arguments for method (%s) at call (%d)',
-            $method, $timing
-        ]);
-    };
 
     return;
 };
