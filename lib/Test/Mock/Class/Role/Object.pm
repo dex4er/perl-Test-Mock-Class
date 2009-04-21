@@ -487,14 +487,14 @@ sub _mock_emulate_call {
                 elsif (ref $rule_arg) {
                     # TODO: use Test::Deep::NoTest
                     eval {
-                        assert_deep_equals($args[$i], $rule_arg);
+                        assert_deep_equals($rule_arg, $args[$i]);
                     };
                     next RULE if $EVAL_ERROR;
                 }
                 else {
                     # TODO: do not use eval
                     eval {
-                        assert_equals($args[$i], $rule_arg);
+                        assert_equals($rule_arg, $args[$i]);
                     };
                     next RULE if $EVAL_ERROR;
                 };
@@ -581,15 +581,15 @@ sub _mock_check_expectations {
         $rule->{call} ++;
 
         eval {
-            fail([
+            fail( [
                 'Maximum call count (%d) for method (%s) at call (%d)',
                 $rule->{maximum}, $method, $timing
-            ]) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
+            ] ) if (defined $rule->{maximum} and $rule->{call} > $rule->{maximum});
 
-            fail([
+            fail( [
                 'Expected call count (%d) for method (%s) at call (%d)',
                 $rule->{count}, $method, $timing
-            ]) if (defined $rule->{count} and $rule->{call} > $rule->{count});
+            ] ) if (defined $rule->{count} and $rule->{call} > $rule->{count});
 
             if (defined $rule->{assertion}) {
                 if (ref $rule->{assertion} eq 'CODE') {
