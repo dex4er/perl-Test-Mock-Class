@@ -186,7 +186,7 @@ and original arguments as arguments.  It allows to return array rather than
 scalar.
 
   $m->mock_return( 'sequence', sub {
-      qw{one two three}[ $_[1] ]
+      qw( one two three )[ $_[1] ]
   } );
   $m->mock_return( 'get_array', sub { (1,2,3) } );
 
@@ -317,7 +317,6 @@ sub mock_expect {
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
     push @{ $self->_mock_expectation->{$method} } => {
-#        assertion => 1,
         %params,
     };
 
