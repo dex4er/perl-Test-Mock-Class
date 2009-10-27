@@ -77,7 +77,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.03';
+our $VERSION = '0.0301';
 
 use Moose 0.56;
 use Class::MOP 0.77;
