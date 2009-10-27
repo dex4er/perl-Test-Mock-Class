@@ -78,7 +78,7 @@ has 'mock_constructor_methods_regexp' => (
 use namespace::clean -except => 'meta';
 
 
-## no critic RequireCheckingReturnValueOfEval
+## no critic qw(RequireCheckingReturnValueOfEval)
 
 =head1 CONSTRUCTORS
 
