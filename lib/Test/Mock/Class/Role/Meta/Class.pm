@@ -118,7 +118,6 @@ The constructor returns metaclass object.
 sub create_mock_class {
     my ($class, $name, %args) = @_;
     my $self = $class->create($name, %args);
-    $self = $self->_mock_reinitialize(%args);
     $self->_construct_mock_class(%args);
     return $self;
 };
@@ -146,7 +145,6 @@ The constructor returns metaclass object.
 sub create_mock_anon_class {
     my ($class, %args) = @_;
     my $self = $class->create_anon_class(%args);
-    $self = $self->_mock_reinitialize(%args);
     $self->_construct_mock_class(%args);
     return $self;
 };
@@ -191,50 +189,6 @@ sub add_mock_constructor {
         $new_object->mock_invoke($constructor, @_);
         return $new_object;
     } );
-    return $self;
-};
-
-
-=item B<_mock_reinitialize>( :I<class> : Str ) : Self
-
-Reinitializes own metaclass with parameters taken from original I<class>.  It
-is necessary if original class has changed C<attribute_metaclass>,
-C<instance_metaclass> or C<method_metaclass>.
-
-The method returns new metaclass object.
-
-=cut
-
-sub _mock_reinitialize {
-    my ($self, %args) = @_;
-
-    if (defined $args{class}) {
-        Class::MOP::load_class($args{class});
-        if (my %metaclasses = $self->_get_mock_metaclasses($args{class})) {
-            # get roles list
-            my @roles = $self->calculate_all_roles;
-
-            # reconstruct metaclass
-            my $new_meta = $args{class}->meta;
-            my $new_self = $self->reinitialize(
-                $self->name,
-                %metaclasses,
-            );
-
-            $new_self->$_( $new_meta->$_ )
-                foreach qw{constructor_class destructor_class error_class};
-
-            %$self = %$new_self;
-            bless $self, ref $new_self;
-
-            Class::MOP::store_metaclass_by_name( $self->name, $self );
-            Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;
-
-            # reapply roles
-            $self->add_role($_) foreach @roles;
-        };
-    };
-
     return $self;
 };
 

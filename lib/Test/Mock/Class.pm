@@ -79,8 +79,8 @@ use warnings;
 
 our $VERSION = '0.0301';
 
-use Moose 0.56;
-use Class::MOP 0.77;
+use Moose 0.81;
+use Class::MOP 0.85;
 
 
 =head1 INHERITANCE
