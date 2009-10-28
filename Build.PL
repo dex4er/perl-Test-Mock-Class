@@ -43,7 +43,7 @@ my $build = Module::Build->new(
     meta_merge => {
         resources => {
             bugtracker => "http://rt.cpan.org/NoAuth/Bugs.html?Dist=$dist",
-            repository => "https://dexter-cpan.googlecode.com/svn/$dist",
+            repository => "http://dexter-cpan.googlecode.com/svn/$dist",
         },
     },
 );
