@@ -17,10 +17,10 @@ my $build = Module::Build->new(
     requires => {
         'perl'               => 5.006,
         'namespace::clean'   => 0,
-        'Class::MOP'         => 0.85,
+        'Class::MOP'         => 0.93,
         'Exception::Base'    => 0,
         'Exception::Fatal'   => 0,
-        'Moose'              => 0.81,
+        'Moose'              => 0.90,
         'Test::Assert'       => 0.05,
     },
     optional => {
