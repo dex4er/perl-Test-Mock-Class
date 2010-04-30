@@ -17,17 +17,20 @@ DESCRIPTION
 
     The unique features of `Test::Mock::Class':
 
-    *   It's API is inspired by PHP SimpleTest framework.
+    *   Its API is inspired by PHP SimpleTest framework.
 
     *   It isn't tied with Test::Builder so it can be used standalone or
         with any xUnit-like framework, i.e. Test::Unit::Lite. Look for
-        Test::Builder::Mock::Class if you want to use it with Test::Builder.
+        Test::Builder::Mock::Class if you want to use it with Test::Builder
+        (Test::More or Test::Simple).
 
-    *   The API for creating mock classes is based on Class::MOP so it
-        doesn't clash with API of original class and is easy expandable.
+    *   The API for creating mock classes is based on Moose and Class::MOP
+        so it doesn't clash with API of original class and is easy
+        expandable.
 
-    *   The methods for defining mock object's behavior is prefixed with
-        `mock_' string so it shouldn't clash with original object's methods.
+    *   The methods for defining mock object's behavior are prefixed with
+        `mock_' string so they shouldn't clash with original object's
+        methods.
 
     *   Mocks as actors: The mock version of a class has all the methods of
         the original class. The return value will be `undef', but it can be
