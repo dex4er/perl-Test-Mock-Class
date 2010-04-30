@@ -16,6 +16,12 @@ Test::Mock::Class - Simulating other classes
   my $metamock = mock_anon_class 'Net::FTP';
   my $mock_object = $metamock->new_object;
 
+  # anonymous class with role applied
+  my $metamock = Test::Mock::Class->create_anon_class(
+      roles => [ 'My::Handler::Role' ],
+  );
+  my $mock_object = $metamock->new_object;
+
 =head1 DESCRIPTION
 
 In a unit test, mock objects can simulate the behavior of complex, real
@@ -71,7 +77,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0102';
+our $VERSION = '0.02';
 
 use Moose 0.56;
 use Class::MOP 0.77;
@@ -131,10 +137,11 @@ The function returns the metaclass object of new I<mock_class>.
         };
     };
 
-=item B<mock_anon_class>( I<class> : Str ) : Moose::Meta::Class
+=item B<mock_anon_class>( I<class> : Str = undef ) : Moose::Meta::Class
 
 Creates an anonymous mock class based on original I<class>.  The name of this
-class is automatically generated.
+class is automatically generated.  If I<class> argument not defined, the empty
+mock class is created.
 
 The function returns the metaobject of new mock class.
 
@@ -143,9 +150,9 @@ The function returns the metaobject of new mock class.
 =cut
 
     $exports{mock_anon_class} = sub {
-        sub ($) {
+        sub (;$) {
             return __PACKAGE__->create_mock_anon_class(
-                class => $_[0],
+                defined $_[0] ? (class => $_[0]) : (),
             );
         };
     };
@@ -240,11 +247,11 @@ Mock classes for L<Test::Builder>: L<Test::Builder::Mock::Class>.
 
 Other implementations: L<Test::MockObject>, L<Test::MockClass>.
 
+=for readme continue
+
 =head1 BUGS
 
 The API is not stable yet and can be changed in future.
-
-=for readme continue
 
 =head1 AUTHOR
 

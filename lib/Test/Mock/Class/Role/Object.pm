@@ -17,12 +17,11 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0102';
+our $VERSION = '0.02';
 
 use Moose::Role;
 
 
-use Class::Inspector;
 use Symbol ();
 
 use Test::Assert ':all';
@@ -175,36 +174,32 @@ Method name.
 
 Returned value.
 
-  $m->mock_add_return_value( 'open', 1 );
+  $m->mock_return( 'open', 1 );
 
 If value is coderef, then it is called with method name, current timing
-and original arguments as arguments.
+and original arguments as arguments.  It allows to return array rather than
+scalar.
 
-  $m->mock_add_return_value( 'sequence', sub {
+  $m->mock_return( 'sequence', sub {
       qw{one two three}[ $_[1] ]
   } );
+  $m->mock_return( 'get_array', sub { (1,2,3) } );
 
 =item at
 
 Value is returned only for current timing, started from C<0>.
 
-  $m->mock_add_return_value( 'sequence', 'one',   at => 0 );
-  $m->mock_add_return_value( 'sequence', 'two',   at => 1 );
-  $m->mock_add_return_value( 'sequence', 'three', at => 2 );
+  $m->mock_return( 'sequence', 'one',   at => 0 );
+  $m->mock_return( 'sequence', 'two',   at => 1 );
+  $m->mock_return( 'sequence', 'three', at => 2 );
 
 =item args
 
 Value is returned only if method is called with proper argument.
 
-  $m->mock_add_return_value(
-      'get_value', 'admin', args => ['dbuser'],
-  );
-  $m->mock_add_return_value(
-      'get_value', 'secret', args => ['dbpass'],
-  );
-  $m->mock_add_return_value(
-      'get_value', sub { $_[2] }, args => [qr/.*/],
-  );
+  $m->mock_return( 'get_value', 'admin', args => ['dbuser'] );
+  $m->mock_return( 'get_value', 'secret', args => ['dbpass'] );
+  $m->mock_return( 'get_value', sub { $_[2] }, args => [qr/.*/] );
 
 =back
 

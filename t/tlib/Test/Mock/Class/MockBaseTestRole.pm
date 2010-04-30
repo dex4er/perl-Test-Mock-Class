@@ -6,8 +6,17 @@ use Test::Assert ':all';
 
 use Test::Mock::Class;
 
-has metamock => ( is => 'rw', clearer => 'clear_metamock' );
-has mock     => ( is => 'rw', clearer => 'clear_mock' );
+has metamock => (
+    is      => 'rw',
+    isa     => 'Test::Mock::Class',
+    clearer => 'clear_metamock'
+);
+
+has mock => (
+    is      => 'rw',
+    does    => 'Test::Mock::Class::Role::Object',
+    clearer => 'clear_mock'
+);
 
 around set_up => sub {
     my ($next, $self) = @_;

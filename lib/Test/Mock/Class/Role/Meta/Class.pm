@@ -17,14 +17,13 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0102';
+our $VERSION = '0.02';
 
 use Moose::Role;
 
 
 use Moose::Util;
 
-use Class::Inspector;
 use Symbol ();
 
 use Test::Assert ':all';
@@ -50,7 +49,7 @@ has 'mock_base_object_role' => (
     default => 'Test::Mock::Class::Role::Object',
 );
 
-=item B<mock_ignore_methods_regexp> : RegexpRef = "/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/"
+=item B<mock_ignore_methods_regexp> : RegexpRef = "/^(_?mock_|(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$)/"
 
 Regexp matches method names which are not created automatically for mock
 class.
@@ -59,7 +58,7 @@ class.
 
 has 'mock_ignore_methods_regexp' => (
     is      => 'rw',
-    default => sub { qr/^(can|DEMOLISHALL|DESTROY|DOES|does|isa|VERSION)$/ },
+    default => sub { qr/^(_?mock_|(can|DEMOLISHALL|DESTROY|DOES|does|meta|isa|VERSION)$)/ },
 );
 
 =item B<mock_constructor_methods_regexp> : RegexpRef = "/^new$/"
@@ -146,7 +145,7 @@ The constructor returns metaclass object.
 
 sub create_mock_anon_class {
     my ($class, %args) = @_;
-    my $self = $class->create_anon_class;
+    my $self = $class->create_anon_class(%args);
     $self = $self->_mock_reinitialize(%args);
     $self->_construct_mock_class(%args);
     return $self;
@@ -212,6 +211,10 @@ sub _mock_reinitialize {
     if (defined $args{class}) {
         Class::MOP::load_class($args{class});
         if (my %metaclasses = $self->_get_mock_metaclasses($args{class})) {
+            # get roles list
+            my @roles = $self->calculate_all_roles;
+
+            # reconstruct metaclass
             my $new_meta = $args{class}->meta;
             my $new_self = $self->reinitialize(
                 $self->name,
@@ -226,6 +229,9 @@ sub _mock_reinitialize {
 
             Class::MOP::store_metaclass_by_name( $self->name, $self );
             Class::MOP::weaken_metaclass( $self->name ) if $self->is_anon_class;
+
+            # reapply roles
+            $self->add_role($_) foreach @roles;
         };
     };
 
@@ -249,25 +255,20 @@ sub _construct_mock_class {
         $self->mock_base_object_role,
     );
 
-    if (defined $args{class}) {
-        $self->superclasses(
-            $self->_get_mock_superclasses($args{class}),
-       );
-    };
+    $self->superclasses( $self->_get_mock_superclasses($args{class}) );
 
     my @methods = defined $args{methods} ? @{ $args{methods} } : ();
 
     my @mock_methods = do {
         my %uniq = map { $_ => 1 }
                    (
-                       $self->_get_mock_methods($args{class}),
+                       $self->get_all_method_names,
                        @methods,
                    );
         keys %uniq;
     };
 
     foreach my $method (@mock_methods) {
-        next if $method eq 'meta';
         if ($method =~ $self->mock_ignore_methods_regexp) {
             # ignore destructor and basic instrospection methods
         }
@@ -283,24 +284,23 @@ sub _construct_mock_class {
 };
 
 
-sub _get_mock_methods {
-    my ($self, $class) = @_;
-
-    if ($class->can('meta')) {
-        return $class->meta->get_all_method_names;
-    };
-
-    my $methods = Class::Inspector->methods($class);
-    return defined $methods ? @$methods : ();
-};
-
-
 sub _get_mock_superclasses {
     my ($self, $class) = @_;
 
-    return $class->can('meta')
-           ? $class->meta->superclasses
-           : @{ *{Symbol::qualify_to_ref($class . '::ISA')} };
+    return ('Moose::Object') unless defined $class;
+
+    my @superclasses = (
+        $class->can('meta')
+        ? $class->meta->superclasses
+        : @{ *{Symbol::qualify_to_ref('ISA', $class)} },
+    );
+
+    unshift @superclasses, 'Moose::Object'
+        unless grep { $_ eq 'Moose::Object' } @superclasses;
+
+    unshift @superclasses, $class;
+
+    return @superclasses;
 };
 
 
