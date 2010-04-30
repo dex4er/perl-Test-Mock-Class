@@ -17,7 +17,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.0101';
 
 use Moose::Role;
 
@@ -37,11 +37,11 @@ use Exception::Base (
 );
 
 
-=head1 ATTRIBUTE
+=head1 ATTRIBUTES
 
 =over
 
-=item _mock_call : HashRef
+=item B<_mock_call> : HashRef
 
 Count of method calls stored as HashRef.
 
@@ -54,7 +54,7 @@ has '_mock_call' => (
 );
 
 
-=item _mock_expectation : HashRef
+=item B<_mock_expectation> : HashRef
 
 Expectations for mock methods stored as HashRef.
 
@@ -67,7 +67,7 @@ has '_mock_expectation' => (
 );
 
 
-=item _mock_action : HashRef
+=item B<_mock_action> : HashRef
 
 Return values or actions for mock methods stored as HashRef.
 
@@ -91,7 +91,7 @@ use namespace::clean -except => 'meta';
 
 =over
 
-=item mock_tally(I<>) : Self
+=item B<mock_tally>(I<>) : Self
 
 Check the expectations at the end.  It should be called expicitly if
 C<minimum> or C<count> parameter was used for expectation, or following
@@ -135,7 +135,7 @@ sub mock_tally {
 };
 
 
-=item mock_invoke(I<method> : Str, I<args> : Array) : Any
+=item B<mock_invoke>( I<method> : Str, I<args> : Array ) : Any
 
 Returns the expected value for the method name and checks expectations.  Will
 generate any test assertions as a result of expectations if there is a test
@@ -157,7 +157,7 @@ sub mock_invoke {
 };
 
 
-=item mock_return(I<method> : Str, I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_return>( I<method> : Str, I<value> : Any, :I<at> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets a return for a parameter list that will be passed on by call to this
 method that match.
@@ -224,7 +224,7 @@ sub mock_return {
 };
 
 
-=item mock_return_at(I<at> : Int, I<method> : Str, I<value> : Any, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_return_at>( I<at> : Int, I<method> : Str, I<value> : Any, :I<args> : ArrayRef[Any] ) : Self
 
 Convenience method for returning a value upon the method call.
 
@@ -241,7 +241,7 @@ sub mock_return_at {
 };
 
 
-=item mock_throw(I<method> : Str, :I<at> : Int, I<exception> : Str|Object, :I<args> : ArrayRef[Any], I<params> : Hash) : Self
+=item B<mock_throw>( I<method> : Str, :I<at> : Int, I<exception> : Str|Object, :I<args> : ArrayRef[Any], I<params> : Hash ) : Self
 
 Sets up a trigger to throw an exception upon the method call.  The method
 takes the same arguments as C<mock_return>.
@@ -279,7 +279,7 @@ sub mock_throw {
 };
 
 
-=item mock_throw_at(I<at> : Int, I<method> : Str, I<exception> : Str|Object, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_throw_at>( I<at> : Int, I<method> : Str, I<exception> : Str|Object, :I<args> : ArrayRef[Any] ) : Self
 
 Convenience method for throwing an error upon the method call.
 
@@ -296,10 +296,10 @@ sub mock_throw_at {
 };
 
 
-=item mock_expect(I<method> : Str, :I<at> : Int, :I<minimum> : Int, :I<maximum> : Int, :I<count> : Int, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect>( I<method> : Str, :I<at> : Int, :I<minimum> : Int, :I<maximum> : Int, :I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
-Sets up an expected call with a set of expected parameters in that call. All
-calls will be compared to these expectations regardless of when the call is
+Sets up an expected call with a set of expected parameters in that call.  Each
+call will be compared to these expectations regardless of when the call is
 made.  The method takes the same arguments as C<mock_return>.
 
 =cut
@@ -325,7 +325,7 @@ sub mock_expect {
 };
 
 
-=item mock_expect_at(I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_at>( I<at> : Int, I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
 
 Sets up an expected call with a set of expected parameters in that call.
 
@@ -342,7 +342,7 @@ sub mock_expect_at {
 };
 
 
-=item mock_expect_call_count(I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_call_count>( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets an expectation for the number of times a method will be called. The
 C<mock_tally> method have to be used to check this.
@@ -360,7 +360,7 @@ sub mock_expect_call_count {
 };
 
 
-=item mock_expect_maximum_call_count(I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_maximum_call_count>( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets the number of times a method may be called before a test failure is
 triggered.
@@ -378,7 +378,7 @@ sub mock_expect_maximum_call_count {
 };
 
 
-=item mock_expect_minimum_call_count(I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_minimum_call_count>( I<method> : Str, I<count> : Int, :I<args> : ArrayRef[Any] ) : Self
 
 Sets the number of times to call a method to prevent a failure on the tally.
 
@@ -395,7 +395,7 @@ sub mock_expect_minimum_call_count {
 };
 
 
-=item mock_expect_never(I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_never>( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
 
 Convenience method for barring a method call.
 
@@ -412,7 +412,7 @@ sub mock_expect_never {
 };
 
 
-=item mock_expect_once(I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_once>( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
 
 Convenience method for a single method call.
 
@@ -429,7 +429,7 @@ sub mock_expect_once {
 };
 
 
-=item mock_expect_at_least_once(I<method> : Str, :I<args> : ArrayRef[Any]) : Self
+=item B<mock_expect_at_least_once>( I<method> : Str, :I<args> : ArrayRef[Any] ) : Self
 
 Convenience method for requiring a method call.
 
@@ -446,7 +446,7 @@ sub mock_expect_at_least_once {
 };
 
 
-=item _mock_emulate_call(I<method> : Str, I<timing> : Int, I<args> : Array) : Any
+=item B<_mock_emulate_call>( I<method> : Str, I<timing> : Int, I<args> : Array ) : Any
 
 Finds the return value matching the incoming arguments.  If there is no
 matching value found then an error is triggered.
@@ -469,7 +469,7 @@ sub _mock_emulate_call {
 };
 
 
-=item _mock_add_call(I<method> : Str, I<args> : Array) : Int
+=item B<_mock_add_call>( I<method> : Str, I<args> : Array ) : Int
 
 Adds one to the call count of a method and returns previous value.
 
@@ -484,7 +484,7 @@ sub _mock_add_call {
     return $self->_mock_call->{$method}++;
 };
 
-=item _mock_check_expectations(I<method> : Str, I<timing> : Num, I<args> : Array) : Self
+=item B<_mock_check_expectations>( I<method> : Str, I<timing> : Num, I<args> : Array ) : Self
 
 Tests the arguments against expectations.
 
@@ -506,7 +506,7 @@ sub _mock_check_expectations {
 };
 
 
-=item _mock_method_matching(I<attribute> : Str, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array) : Any
+=item B<_mock_method_matching>( I<attribute> : Str, I<action> : Str, I<method> : Str, I<timing> : Num, I<args> : Array ) : Any
 
 Do matching for method and do some action if succeed.
 
@@ -655,7 +655,7 @@ sub _mock_method_matching {
  +mock_expect_never( method : Str, :args : ArrayRef[Any] ) : Self
  +mock_expect_once( method : Str, :args : ArrayRef[Any] ) : Self
  +mock_expect_at_least_once( method : Str, :args : ArrayRef[Any] ) : Self
- +mock_invoke(method : Str, args : Array) : Any
+ +mock_invoke( method : Str, args : Array ) : Any
  +mock_tally() : Self
                                                                               ]
 

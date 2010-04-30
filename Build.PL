@@ -16,9 +16,10 @@ my $build = Module::Build->new(
     license => 'perl',
     requires => {
         'perl'               => 5.006,
+        'namespace::clean'   => 0,
         'Class::MOP'         => 0.77,
         'Moose'              => 0.56,
-        'Test::Assert'       => 0,
+        'Test::Assert'       => 0.05,
     },
     optional => {
     },
