@@ -3,21 +3,21 @@ require 5.006;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'TESTS' => 't/*.t t/tlib/*.t t/tlib/Test/*.t t/tlib/Test/Mock/*.t t/tlib/Test/Mock/Class/*.t t/tlib/Test/Mock/Class/Role/*.t t/tlib/Test/Mock/Class/Role/Meta/*.t t/tlib/Test/Mock/Class/Role/Meta/Class/*.t t/tlib/Test/Mock/Class/Role/Object/*.t t/tlib/Test/Mock/Class/Test/*.t',
+          'TESTS' => 't/*.t t/tlib/*.t t/tlib/Test/*.t t/tlib/Test/Mock/*.t t/tlib/Test/Mock/Class/*.t t/tlib/Test/Mock/Class/Test/*.t t/tlib/Test/Mock/Class/Role/*.t t/tlib/Test/Mock/Class/Role/Object/*.t t/tlib/Test/Mock/Class/Role/Meta/*.t t/tlib/Test/Mock/Class/Role/Meta/Class/*.t',
           'PL_FILES' => {},
           'INSTALLDIRS' => 'site',
           'NAME' => 'Test::Mock::Class',
           'EXE_FILES' => [],
           'VERSION_FROM' => 'lib/Test/Mock/Class.pm',
           'PREREQ_PM' => {
-                           'Class::MOP' => '0.85',
+                           'Class::MOP' => '0.93',
                            'Exception::Fatal' => 0,
                            'namespace::clean' => 0,
                            'Test::Unit::Lite' => '0.12',
                            'Class::Inspector' => 0,
                            'Test::Assert' => '0.05',
                            'Exception::Base' => 0,
-                           'Moose' => '0.81'
+                           'Moose' => '0.9'
                          }
         )
 ;
