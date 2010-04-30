@@ -11,6 +11,7 @@ WriteMakefile
                            'namespace::clean' => 0,
                            'Test::Unit::Lite' => '0.12',
                            'Class::MOP' => '0.77',
+                           'Class::Inspector' => 0,
                            'Test::Assert' => '0.05',
                            'Moose' => '0.56'
                          }
