@@ -14,33 +14,35 @@ not run its Makefile.PL or Build.PL.
 -----BEGIN PGP SIGNED MESSAGE-----
 Hash: SHA1
 
-SHA1 e6194d4c49f5fe0be16de4e727b6c2d2e9bac245 Build.PL
-SHA1 cf80555763be3fa5c8d09061cb51f4d37fc7b3d5 Changes
+SHA1 850777a587ee94aa1383efee7dc696c065c48d5b Build.PL
+SHA1 418ae31ba88e8bdf1b98b52824f743b38e75f1f3 Changes
 SHA1 f939988925f19fecc806b85f1e4d752dc9d46a6e LICENSE
-SHA1 69f56560d51c3822c1be0f5c17b12c5c8f092fe1 MANIFEST
+SHA1 cb390d9b49099c45e5d48fe601451170f415f6cf MANIFEST
 SHA1 7d9037725a8f8c9c65eff1e091819c215f55c650 MANIFEST.SKIP
-SHA1 2b2592b10b3d1fc27d5ebdf9a641081c77ec997b META.yml
-SHA1 d2d45d356918ddb9ea05f33f17eb8b60e1afe497 Makefile.PL
-SHA1 6fe7b71f53e540831ae6c9fdc3142380bc13c40e README
+SHA1 44d846759b0b4016bad43a321baea94652fbcb5c META.yml
+SHA1 f9a7ed50fd453dc614520a0ef55325c15e78f68b Makefile.PL
+SHA1 220a906d4d05ce17326c297bc6ae7dfc82bd12f5 README
 SHA1 c7278de22eacf9174ae895b581bd976c03512dbc eg/mock_io_file.pl
 SHA1 670b8c64a49a4242d92228c280ba5855c2c70708 eg/mock_meta_io_file.pl
-SHA1 1e42669899521b3e29303486e1a7d6b0152a7060 lib/Test/Mock/Class.pm
-SHA1 d13f02cc7a58fbe00f7128d9be3c3c05da462969 lib/Test/Mock/Class/Role/Meta/Class.pm
-SHA1 5f14c97ed14f00f63ebb1190faec5f22c9c4ea94 lib/Test/Mock/Class/Role/Object.pm
+SHA1 e0e866e9417da375f5ad0c9cf3d54c94a7e88fed lib/Test/Mock/Class.pm
+SHA1 5ba41bc6fa66f9d345e62d8264fc03af9ce6b651 lib/Test/Mock/Class/Role/Meta/Class.pm
+SHA1 53df6a91a174e835dca8353b2dae27f0fa992037 lib/Test/Mock/Class/Role/Object.pm
 SHA1 c21578f4a722dbe8e302a27deaaa2ce5f68c5f9b t/all_tests.t
 SHA1 7fd6e2397259525641d03b6c8199b4e4c0e2dda7 t/test.pl
 SHA1 c9c8f313f88e3400f7be18c2d9d69d4f95f97b39 t/tlib/Test/Mock/Class/APITest.pm
-SHA1 a6f0859690d8b728fd99eb369057e2a00d24a53d t/tlib/Test/Mock/Class/ExampleTest.pm
+SHA1 cc5b6a543db98e7c9f45d11468fdf1a30e996233 t/tlib/Test/Mock/Class/ExampleTest.pm
 SHA1 ca9e40619fd9772d7124535752b7d299a89b6bdc t/tlib/Test/Mock/Class/ExpectationsTest.pm
-SHA1 49efa7c9123facb99c8c7061af6307ba6253bb31 t/tlib/Test/Mock/Class/ExpectationsThatPassTest.pm
+SHA1 7d347c1f05529cf8dbfbe3af57182fba473e7637 t/tlib/Test/Mock/Class/ExpectationsThatPassTest.pm
 SHA1 1e0e5183c31141391b05d01280138ed29031a616 t/tlib/Test/Mock/Class/GenerateAnonTest.pm
+SHA1 c0fcc1d7cd44241942d890630ff7a418b5ef55c8 t/tlib/Test/Mock/Class/GenerateAnonWithRoleTest.pm
 SHA1 e3bf15cac0f16b8ab7b8b5a55b01211dadfb4284 t/tlib/Test/Mock/Class/GenerateTest.pm
-SHA1 b4844466f7d34e023630cf1ad8bd15c16ccaaa90 t/tlib/Test/Mock/Class/MockBaseTestRole.pm
+SHA1 82a453f3b7e77ddf2911f89cd8c1f9ee35dd8e9a t/tlib/Test/Mock/Class/MockBaseTestRole.pm
 SHA1 d67813c6e4598a7acda60aae1d850fc6fe3132e6 t/tlib/Test/Mock/Class/MockTallyTestRole.pm
 SHA1 fc05fa925f2b5470ebaa44a0fffc59adccd6bf30 t/tlib/Test/Mock/Class/MockTestRole.pm
-SHA1 23b70bf80987f084ab1237ed42acb79a58a914e2 t/tlib/Test/Mock/Class/ReturnTest.pm
+SHA1 dfa515a34bccca19597aa8038f2542836b90c325 t/tlib/Test/Mock/Class/ReturnTest.pm
 SHA1 1b4ed8a19e4daaff5a214eecb7701e7376e2d4ce t/tlib/Test/Mock/Class/Role/Meta/Class/APITest.pm
 SHA1 d5e44e8dda918270431cfb2342543b8b68755774 t/tlib/Test/Mock/Class/Role/Object/APITest.pm
+SHA1 f52b271841a40395e5b511dfb7569c8a5bcbaa71 t/tlib/Test/Mock/Class/RoleTestRole.pm
 SHA1 8285c7759807f4bf8dad83f291b7b888ab83fb7b t/tlib/Test/Mock/Class/Test/Dummy.pm
 SHA1 0579aa28e795dd77552f21fd624527277ff909ff t/tlib/Test/Mock/Class/ThrowingTest.pm
 SHA1 1a773556eecd66165fee5ca25d393e22c8a30b03 t/tlib/Test/Mock/Class/UseTest.pm
@@ -61,7 +63,7 @@ SHA1 a38994922fda6d64e2ee75198fadc464a221fea9 xt/signature.t
 -----BEGIN PGP SIGNATURE-----
 Version: GnuPG v1.4.9 (GNU/Linux)
 
-iEYEARECAAYFAknm/tMACgkQhMHHe8CxCltLXgCg1k7rXzj7flqdH1msTeRAotM1
-vbcAoOhdGn7NjjG5Axk/6sv4pugBd5lD
-=ozFs
+iEYEARECAAYFAknrg8gACgkQhMHHe8CxCltnMQCcClkUC0yjJogFdxYNf+acKT0+
+zFwAnj2aUuRnx96TNflGqR07XQqlm2WW
+=BLHD
 -----END PGP SIGNATURE-----

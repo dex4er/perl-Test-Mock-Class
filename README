@@ -10,6 +10,12 @@ SYNOPSIS
       my $metamock = mock_anon_class 'Net::FTP';
       my $mock_object = $metamock->new_object;
 
+      # anonymous class with role applied
+      my $metamock = Test::Mock::Class->create_anon_class(
+          roles => [ 'My::Handler::Role' ],
+      );
+      my $mock_object = $metamock->new_object;
+
 DESCRIPTION
     In a unit test, mock objects can simulate the behavior of complex, real
     (non-mock) objects and are therefore useful when a real object is
@@ -38,6 +44,9 @@ DESCRIPTION
       calling arguments and throws an exception if arguments don't match
       (`mock_expect' method). An exception also can be thrown if the method
       wasn't called at all (`mock_expect_once' method).
+
+BUGS
+    The API is not stable yet and can be changed in future.
 
 AUTHOR
     Piotr Roszatycki <dexter@cpan.org>
