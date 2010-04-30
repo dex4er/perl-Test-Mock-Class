@@ -77,10 +77,10 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0301';
+our $VERSION = '0.0302';
 
-use Moose 0.81;
-use Class::MOP 0.85;
+use Moose 0.90;
+use Class::MOP 0.93;
 
 
 =head1 INHERITANCE

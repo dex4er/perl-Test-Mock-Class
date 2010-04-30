@@ -1,3 +1,10 @@
+0.0302 | Piotr Roszatycki <dexter@cpan.org> | 2009-11-17
+
+Fixes:
+
+* Requires Class::MOP => 0.93, Moose >= 0.90.
+
+------------------------------------------------------------------------
 0.0301 | Piotr Roszatycki <dexter@cpan.org> | 2009-10-27
 
 Fixes:

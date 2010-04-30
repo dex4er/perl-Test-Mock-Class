@@ -17,10 +17,10 @@ my $build = Module::Build->new(
     requires => {
         'perl'               => 5.006,
         'namespace::clean'   => 0,
-        'Class::MOP'         => 0.85,
+        'Class::MOP'         => 0.93,
         'Exception::Base'    => 0,
         'Exception::Fatal'   => 0,
-        'Moose'              => 0.81,
+        'Moose'              => 0.90,
         'Test::Assert'       => 0.05,
     },
     optional => {
@@ -43,7 +43,7 @@ my $build = Module::Build->new(
     meta_merge => {
         resources => {
             bugtracker => "http://rt.cpan.org/NoAuth/Bugs.html?Dist=$dist",
-            repository => "https://dexter-cpan.googlecode.com/svn/$dist",
+            repository => "http://dexter-cpan.googlecode.com/svn/$dist",
         },
     },
 );
