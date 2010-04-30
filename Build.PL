@@ -13,10 +13,11 @@ my $module = 'Test::Mock::Class';
 
 my $build = Module::Build->new(
     module_name => $module,
-    license => 'perl',
+    license => 'lgpl',
     requires => {
         'perl'               => 5.006,
         'namespace::clean'   => 0,
+        'Class::Inspector'   => 0,
         'Class::MOP'         => 0.77,
         'Moose'              => 0.56,
         'Test::Assert'       => 0.05,

@@ -1,4 +1,12 @@
 ------------------------------------------------------------------------
+0.0102 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-16
+
+Fixes:
+
+* Requires Class::Inspector.
+* This module is under LGPL only.
+
+------------------------------------------------------------------------
 0.0101 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-15
 
 Fixes:
