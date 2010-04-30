@@ -18,12 +18,15 @@ my $build = Module::Build->new(
         'perl'               => 5.006,
         'namespace::clean'   => 0,
         'Class::MOP'         => 0.77,
+        'Exception::Base'    => 0,
+        'Exception::Fatal'   => 0,
         'Moose'              => 0.56,
         'Test::Assert'       => 0.05,
     },
     optional => {
     },
     build_requires => {
+        'Class::Inspector'   => 0,
         'Test::Unit::Lite'   => 0.12,
     },
     create_makefile_pl => 'traditional',

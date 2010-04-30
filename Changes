@@ -1,4 +1,25 @@
 ------------------------------------------------------------------------
+0.03 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-21
+
+Fixes:
+
+* Build requires Class::Inspector.
+
+Changes:
+
+* Requires Exception::Base and Exception::Fatal.
+
+* Count all matched expectations:
+
+  $m->mock_expect_once('method', args => [1, 2, 3]);
+  $m->mock_expect_call_count('method', 2);
+  $m->method(1, 2, 3);  # matches first expectation
+  $m->method();
+  $m->mock_tally();     # matches second expectation 
+
+* Test::Assert's assertions are used to check if arguments matches.      
+
+------------------------------------------------------------------------
 0.02 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-18
 
 Changes:

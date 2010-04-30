@@ -118,7 +118,17 @@ sub test_failed_arguments {
     my ($self) = @_;
     my $mock = $self->mock;
     $mock->mock_expect('a_method', args => ['this']);
-    assert_raises( qr/Wrong arguments for method/, sub {
+    assert_raises( { -isa => 'Exception::Assertion', reason => qr/Expected/ }, sub {
+        $mock->a_method('that');
+    } );
+};
+
+sub test_failed_arguments_with_two_calls {
+    my ($self) = @_;
+    my $mock = $self->mock;
+    $mock->mock_expect('a_method', args => ['this']);
+    $mock->a_method('this');
+    assert_raises( { -isa => 'Exception::Assertion', reason => qr/Expected/ }, sub {
         $mock->a_method('that');
     } );
 };
