@@ -6,7 +6,10 @@ WriteMakefile
           'NAME' => 'Test::Mock::Class',
           'VERSION_FROM' => 'lib/Test/Mock/Class.pm',
           'PREREQ_PM' => {
+                           'Class::Inspector' => 0,
                            'Class::MOP' => '0.77',
+                           'Exception::Base' => 0,
+                           'Exception::Fatal' => 0,
                            'Moose' => '0.56',
                            'Test::Assert' => '0.05',
                            'Test::Unit::Lite' => '0.12',
