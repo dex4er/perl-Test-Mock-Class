@@ -10,7 +10,7 @@ use Test::Assert ':all';
 
 sub test_api {
     my @api = grep { ! /^_/ } @{ Class::Inspector->functions('Test::Mock::Class::Role::Object') };
-    assert_deep_equals( [ qw{
+    assert_deep_equals( [ qw(
         meta
         mock_expect
         mock_expect_at
@@ -26,7 +26,7 @@ sub test_api {
         mock_tally
         mock_throw
         mock_throw_at
-    } ], \@api );
+    ) ], \@api );
 };
 
 1;

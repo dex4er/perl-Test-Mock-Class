@@ -17,10 +17,10 @@ my $build = Module::Build->new(
     requires => {
         'perl'               => 5.006,
         'namespace::clean'   => 0,
-        'Class::MOP'         => 0.77,
+        'Class::MOP'         => 0.85,
         'Exception::Base'    => 0,
         'Exception::Fatal'   => 0,
-        'Moose'              => 0.56,
+        'Moose'              => 0.81,
         'Test::Assert'       => 0.05,
     },
     optional => {
@@ -29,6 +29,7 @@ my $build = Module::Build->new(
         'Class::Inspector'   => 0,
         'Test::Unit::Lite'   => 0.12,
     },
+    auto_configure_requires => 0,
     create_makefile_pl => 'traditional',
     create_readme => 1,
     create_license => 1,
@@ -36,7 +37,7 @@ my $build = Module::Build->new(
     recursive_test_files => 1,
     add_to_cleanup => [
         '*.bak', '*.gz', '*.tgz', '*.ppd', '*.ppmx', '*.deb', '*.bat',
-        'Makefile', 'pm_to_blib', 'cover_db', 'Debian_CPANTS.txt',
+        'Makefile', 'pm_to_blib', 'cover_db', 'xt/Debian_CPANTS.txt',
         "$dist-*",
     ],
     meta_merge => {

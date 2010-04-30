@@ -1,3 +1,14 @@
+0.0301 | Piotr Roszatycki <dexter@cpan.org> | 2009-10-27
+
+Fixes:
+
+* Compatibility with Moose >= 0.81.
+
+Changes:
+
+* Test::Mock::Class::Role::Meta::Class:
+  - Method "_mock_reinitialize" is not necessary anymore.
+
 ------------------------------------------------------------------------
 0.03 | Piotr Roszatycki <dexter@cpan.org> | 2009-04-21
 

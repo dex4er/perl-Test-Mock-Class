@@ -17,7 +17,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.03';
+our $VERSION = '0.0301';
 
 use Moose::Role;
 
@@ -27,7 +27,7 @@ use Symbol ();
 use Test::Assert ':all';
 
 
-## no critic ProhibitConstantPragma
+## no critic qw(ProhibitConstantPragma)
 use constant Exception => 'Test::Mock::Class::Exception';
 use English '-no_match_vars';
 
@@ -86,7 +86,7 @@ has '_mock_action' => (
 use namespace::clean -except => 'meta';
 
 
-## no critic RequireCheckingReturnValueOfEval
+## no critic qw(RequireCheckingReturnValueOfEval)
 
 =head1 METHODS
 
@@ -186,7 +186,7 @@ and original arguments as arguments.  It allows to return array rather than
 scalar.
 
   $m->mock_return( 'sequence', sub {
-      qw{one two three}[ $_[1] ]
+      qw( one two three )[ $_[1] ]
   } );
   $m->mock_return( 'get_array', sub { (1,2,3) } );
 
@@ -317,7 +317,6 @@ sub mock_expect {
 
     assert_equals('HASH', ref $self->_mock_expectation) if ASSERT;
     push @{ $self->_mock_expectation->{$method} } => {
-#        assertion => 1,
         %params,
     };
 
