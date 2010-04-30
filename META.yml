@@ -1,0 +1,32 @@
+---
+name: Test-Mock-Class
+version: 0.01
+author:
+  - 'Piotr Roszatycki <dexter@cpan.org>'
+abstract: Simulating other classes
+license: perl
+resources:
+  bugtracker: http://rt.cpan.org/NoAuth/Bugs.html?Dist=Test-Mock-Class
+  license: http://dev.perl.org/licenses/
+  repository: https://dexter-cpan.googlecode.com/svn/Test-Mock-Class
+requires:
+  Class::MOP: 0.77
+  Moose: 0.56
+  Test::Assert: 0
+  perl: 5.006
+build_requires:
+  Test::Unit::Lite: 0.12
+provides:
+  Test::Mock::Class:
+    file: lib/Test/Mock/Class.pm
+    version: 0.01
+  Test::Mock::Class::Role::Meta::Class:
+    file: lib/Test/Mock/Class/Role/Meta/Class.pm
+    version: 0.01
+  Test::Mock::Class::Role::Object:
+    file: lib/Test/Mock/Class/Role/Object.pm
+    version: 0.01
+generated_by: Module::Build version 0.31012
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2
