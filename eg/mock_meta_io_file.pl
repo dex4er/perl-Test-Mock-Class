@@ -9,6 +9,8 @@ use constant::boolean;
 use Test::Mock::Class ':all';
 use Test::Assert ':all';
 
+require IO::File;
+
 my $mock = mock_anon_class 'IO::File';
 my $io = $mock->new_object;
 $io->mock_return( open => TRUE, args => [qr//, 'r'] );

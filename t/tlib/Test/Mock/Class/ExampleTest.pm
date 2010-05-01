@@ -10,6 +10,8 @@ use Test::Assert ':all';
 
 use Test::Mock::Class ':all';
 
+require IO::File;
+
 sub test_mock_class {
     mock_class 'IO::File' => 'IO::File::Mock';
 

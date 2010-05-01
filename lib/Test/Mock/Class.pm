@@ -9,6 +9,9 @@ Test::Mock::Class - Simulating other classes
 =head1 SYNOPSIS
 
   use Test::Mock::Class ':all';
+  require Net::FTP;
+
+  # concrete mocked class
   mock_class 'Net::FTP' => 'Net::FTP::Mock';
   my $mock_object = Net::FTP::Mock->new;
 
@@ -77,7 +80,7 @@ use 5.006;
 use strict;
 use warnings;
 
-our $VERSION = '0.0302';
+our $VERSION = '0.0303';
 
 use Moose 0.90;
 use Class::MOP 0.93;
@@ -123,6 +126,10 @@ BEGIN {
 Creates the concrete mock class based on original I<class>.  If the name of
 I<mock_class> is undefined, its name is created based on name of original
 I<class> with added C<::Mock> suffix.
+
+The original I<class> is loaded with C<L<Class::MOP>::load_class> function
+which behaves wrongly for some packages, i.e. I<IO::File>.  It is much safer
+to require original class explicitly.
 
 The function returns the metaclass object of new I<mock_class>.
 
@@ -222,6 +229,8 @@ Example code:
   use Test::Assert ':all';
   use Test::Mock::Class ':all';
 
+  require IO::File;
+
   sub test_mock_class {
       my ($self) = @_;
 
@@ -263,7 +272,7 @@ Based on SimpleTest, an open source unit test framework for the PHP
 programming language, created by Marcus Baker, Jason Sweat, Travis Swicegood,
 Perrick Penet and Edward Z. Yang.
 
-Copyright (c) 2009 Piotr Roszatycki <dexter@cpan.org>.
+Copyright (c) 2009, 2010 Piotr Roszatycki <dexter@cpan.org>.
 
 This program is free software; you can redistribute it and/or modify it
 under GNU Lesser General Public License.
