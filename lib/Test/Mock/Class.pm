@@ -9,6 +9,9 @@ Test::Mock::Class - Simulating other classes
 =head1 SYNOPSIS
 
   use Test::Mock::Class ':all';
+  require Net::FTP;
+
+  # concrete mocked class
   mock_class 'Net::FTP' => 'Net::FTP::Mock';
   my $mock_object = Net::FTP::Mock->new;
 
@@ -124,6 +127,10 @@ Creates the concrete mock class based on original I<class>.  If the name of
 I<mock_class> is undefined, its name is created based on name of original
 I<class> with added C<::Mock> suffix.
 
+The original I<class> is loaded with C<L<Class::MOP>::load_class> function
+which behaves wrongly for some packages, i.e. I<IO::File>.  It is much safer
+to require original class explicitly.
+
 The function returns the metaclass object of new I<mock_class>.
 
 =cut
@@ -221,6 +228,8 @@ Example code:
 
   use Test::Assert ':all';
   use Test::Mock::Class ':all';
+
+  require IO::File;
 
   sub test_mock_class {
       my ($self) = @_;
