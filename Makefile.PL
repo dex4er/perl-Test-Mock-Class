@@ -3,7 +3,7 @@ require 5.006;
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'TESTS' => 't/*.t t/tlib/*.t t/tlib/Test/*.t t/tlib/Test/Mock/*.t t/tlib/Test/Mock/Class/*.t t/tlib/Test/Mock/Class/Test/*.t t/tlib/Test/Mock/Class/Role/*.t t/tlib/Test/Mock/Class/Role/Object/*.t t/tlib/Test/Mock/Class/Role/Meta/*.t t/tlib/Test/Mock/Class/Role/Meta/Class/*.t',
+          'TESTS' => 't/*.t t/tlib/*.t t/tlib/Test/*.t t/tlib/Test/Mock/*.t t/tlib/Test/Mock/Class/*.t t/tlib/Test/Mock/Class/Role/*.t t/tlib/Test/Mock/Class/Role/Meta/*.t t/tlib/Test/Mock/Class/Role/Meta/Class/*.t t/tlib/Test/Mock/Class/Role/Object/*.t t/tlib/Test/Mock/Class/Test/*.t',
           'PL_FILES' => {},
           'INSTALLDIRS' => 'site',
           'NAME' => 'Test::Mock::Class',

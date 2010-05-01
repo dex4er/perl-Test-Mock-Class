@@ -3,6 +3,9 @@ NAME
 
 SYNOPSIS
       use Test::Mock::Class ':all';
+      require Net::FTP;
+
+      # concrete mocked class
       mock_class 'Net::FTP' => 'Net::FTP::Mock';
       my $mock_object = Net::FTP::Mock->new;
 
@@ -56,7 +59,7 @@ LICENSE
     programming language, created by Marcus Baker, Jason Sweat, Travis
     Swicegood, Perrick Penet and Edward Z. Yang.
 
-    Copyright (c) 2009 Piotr Roszatycki <dexter@cpan.org>.
+    Copyright (c) 2009, 2010 Piotr Roszatycki <dexter@cpan.org>.
 
     This program is free software; you can redistribute it and/or modify it
     under GNU Lesser General Public License.
