@@ -15,12 +15,12 @@ my $build = Module::Build->new(
     module_name => $module,
     license => 'lgpl',
     requires => {
-        'perl'               => 5.006,
+        'perl'               => 5.006002,
         'namespace::clean'   => 0,
-        'Class::MOP'         => 0.93,
+        'Any::Moose'         => 0,
         'Exception::Base'    => 0,
         'Exception::Fatal'   => 0,
-        'Moose'              => 0.90,
+        'MouseX::Foreign'    => 0,
         'Test::Assert'       => 0.05,
     },
     optional => {
