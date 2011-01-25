@@ -1,6 +1,8 @@
 0.04 | Piotr Roszatycki <dexter@cpan.org> | 2011-01-25
 
-UNRELEASED
+Changes:
+
+* Works with Any::Moose.
 
 ------------------------------------------------------------------------
 0.0303 | Piotr Roszatycki <dexter@cpan.org> | 2010-05-01

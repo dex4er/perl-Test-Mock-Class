@@ -1,6 +1,6 @@
 package Test::Mock::Class::MockTallyTestRole;
 
-use Moose::Role;
+use Any::Moose 'Role';
 
 around tear_down => sub {
     my ($next, $self) = @_;

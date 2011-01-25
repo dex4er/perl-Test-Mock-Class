@@ -82,8 +82,7 @@ use warnings;
 
 our $VERSION = '0.04';
 
-use Moose 0.90;
-use Class::MOP 0.93;
+use Any::Moose;
 
 
 =head1 INHERITANCE
@@ -96,7 +95,7 @@ extends L<Moose::Meta::Class>
 
 =cut
 
-extends 'Moose::Meta::Class';
+extends any_moose('::Meta::Class');
 
 =item *
 

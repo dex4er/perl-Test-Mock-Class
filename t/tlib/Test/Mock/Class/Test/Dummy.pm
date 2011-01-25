@@ -1,6 +1,6 @@
 package Test::Mock::Class::Test::Dummy;
 
-use Moose;
+use Any::Moose;
 
 sub a_method {
     return 1;

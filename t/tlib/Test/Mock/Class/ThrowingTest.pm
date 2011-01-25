@@ -2,7 +2,9 @@ package Test::Mock::Class::ThrowingTest;
 
 use Test::Unit::Lite;
 
-use Moose;
+use Any::Moose;
+use if Any::Moose::mouse_is_preferred, 'MouseX::Foreign';
+
 extends 'Test::Unit::TestCase';
 with 'Test::Mock::Class::MockBaseTestRole';
 

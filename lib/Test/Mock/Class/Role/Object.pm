@@ -19,7 +19,7 @@ use warnings;
 
 our $VERSION = '0.04';
 
-use Moose::Role;
+use Any::Moose 'Role';
 
 
 use Symbol ();

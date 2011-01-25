@@ -1,6 +1,6 @@
 package Test::Mock::Class::MockBaseTestRole;
 
-use Moose::Role;
+use Any::Moose 'Role';
 
 use Test::Assert ':all';
 
@@ -25,7 +25,7 @@ around set_up => sub {
             class => 'Test::Mock::Class::Test::Dummy',
         )
     );
-    assert_true($metamock->isa('Moose::Meta::Class'));
+    assert_true($metamock->isa(any_moose('::Meta::Class')));
     my $mock = $self->mock($metamock->new_object);
     assert_true($mock->does('Test::Mock::Class::Role::Object'));
     return $self->$next();

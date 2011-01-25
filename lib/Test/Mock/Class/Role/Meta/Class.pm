@@ -19,10 +19,10 @@ use warnings;
 
 our $VERSION = '0.04';
 
-use Moose::Role;
+use Any::Moose 'Role';
 
 
-use Moose::Util;
+use Any::Moose 'Util' => ['apply_all_roles'];
 
 use Symbol ();
 
@@ -204,10 +204,14 @@ this name is created.
 sub _construct_mock_class {
     my ($self, %args) = @_;
 
-    Moose::Util::apply_all_roles(
+    apply_all_roles(
         $self,
         $self->mock_base_object_role,
     );
+
+    # FIXME: Bad hack because Mouse doesn't allow to inherit on non-Mouse class
+    no warnings 'redefine';
+    local *Mouse::Meta::Class::inherit_from_foreign_class = sub { 1; } if Any::Moose::mouse_is_preferred;
 
     $self->superclasses( $self->_get_mock_superclasses($args{class}) );
 
@@ -241,7 +245,7 @@ sub _construct_mock_class {
 sub _get_mock_superclasses {
     my ($self, $class) = @_;
 
-    return ('Moose::Object') unless defined $class;
+    return (any_moose('::Object')) unless defined $class;
 
     my @superclasses = (
         $class->can('meta')
@@ -249,8 +253,8 @@ sub _get_mock_superclasses {
         : @{ *{Symbol::qualify_to_ref('ISA', $class)} },
     );
 
-    unshift @superclasses, 'Moose::Object'
-        unless grep { $_ eq 'Moose::Object' } @superclasses;
+    unshift @superclasses, any_moose('::Object')
+        unless grep { $_ eq any_moose('::Object') } @superclasses;
 
     unshift @superclasses, $class;
 

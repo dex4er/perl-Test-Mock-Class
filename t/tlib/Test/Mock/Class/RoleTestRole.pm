@@ -1,6 +1,6 @@
 package Test::Mock::Class::RoleTestRole;
 
-use Moose::Role;
+use Any::Moose 'Role';
 
 sub test_role_method {
     1;

@@ -7,6 +7,9 @@ use warnings;
 
 use Test::Unit::Lite;
 
+BEGIN { $ENV{ANY_MOOSE} = 'Mouse' };
+use Any::Moose;
+
 local $SIG{__WARN__} = sub { require Carp; Carp::confess(@_) };
 
 Test::Unit::HarnessUnit->new->start('Test::Unit::Lite::AllTests');
