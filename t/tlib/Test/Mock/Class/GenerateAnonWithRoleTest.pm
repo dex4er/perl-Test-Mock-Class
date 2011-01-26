@@ -2,6 +2,8 @@ package Test::Mock::Class::GenerateAnonWithRoleTest;
 
 use Test::Unit::Lite;
 
+use Any::Moose;
+
 use base 'Test::Unit::TestCase';
 
 use Test::Assert ':all';
