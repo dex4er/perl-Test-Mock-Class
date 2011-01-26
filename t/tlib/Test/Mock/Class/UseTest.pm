@@ -2,10 +2,7 @@ package Test::Mock::Class::UseTest;
 
 use Test::Unit::Lite;
 
-use Any::Moose;
-use if Any::Moose::mouse_is_preferred, 'MouseX::Foreign';
-
-extends 'Test::Unit::TestCase';
+use base 'Test::Unit::TestCase';
 
 use Test::Assert ':all';
 

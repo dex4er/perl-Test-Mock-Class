@@ -3,9 +3,8 @@ package Test::Mock::Class::ExpectationsTest;
 use Test::Unit::Lite;
 
 use Any::Moose;
-use if Any::Moose::mouse_is_preferred, 'MouseX::Foreign';
 
-extends 'Test::Unit::TestCase';
+use base 'Test::Unit::TestCase';
 with 'Test::Mock::Class::MockBaseTestRole';
 
 use Test::Assert ':all';

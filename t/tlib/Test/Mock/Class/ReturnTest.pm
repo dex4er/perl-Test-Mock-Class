@@ -1,9 +1,8 @@
 package Test::Mock::Class::ReturnTest;
 
 use Any::Moose;
-use if Any::Moose::mouse_is_preferred, 'MouseX::Foreign';
 
-extends 'Test::Unit::TestCase';
+use base 'Test::Unit::TestCase';
 with 'Test::Mock::Class::MockTestRole';
 
 use Test::Assert ':all';

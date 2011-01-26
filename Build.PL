@@ -20,7 +20,6 @@ my $build = Module::Build->new(
         'Any::Moose'         => 0,
         'Exception::Base'    => 0,
         'Exception::Fatal'   => 0,
-        'MouseX::Foreign'    => 0,
         'Test::Assert'       => 0.05,
     },
     optional => {
