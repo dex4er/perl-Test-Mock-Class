@@ -3,6 +3,7 @@
 Changes:
 
 * Works with Any::Moose.
+* Module namespace::functions replaced namespace::clean.
 
 ------------------------------------------------------------------------
 0.0303 | Piotr Roszatycki <dexter@cpan.org> | 2010-05-01

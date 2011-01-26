@@ -108,7 +108,7 @@ with L<Test::Mock::Class::Role::Meta::Class>
 with 'Test::Mock::Class::Role::Meta::Class';
 
 
-use namespace::clean -except => 'meta';
+use namespace::functions -except => 'meta';
 
 
 =head1 FUNCTIONS
@@ -190,6 +190,8 @@ Imports all functions into caller's namespace.
     );
 };
 
+
+no namespace::functions;
 
 1;
 

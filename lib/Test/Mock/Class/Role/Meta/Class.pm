@@ -75,7 +75,7 @@ has 'mock_constructor_methods_regexp' => (
 );
 
 
-use namespace::clean -except => 'meta';
+use namespace::functions -except => 'meta';
 
 
 ## no critic qw(RequireCheckingReturnValueOfEval)
@@ -290,6 +290,8 @@ sub _get_mock_metaclass_instance_roles {
            @{ $metaclass_instance->roles };
 };
 
+
+no namespace::functions;
 
 1;
 

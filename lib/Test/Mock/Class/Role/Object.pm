@@ -83,7 +83,7 @@ has '_mock_action' => (
 );
 
 
-use namespace::clean -except => 'meta';
+use namespace::functions -except => 'meta';
 
 
 ## no critic qw(RequireCheckingReturnValueOfEval)
@@ -609,6 +609,8 @@ sub _mock_check_expectations {
     return;
 };
 
+
+no namespace::functions;
 
 1;
 
