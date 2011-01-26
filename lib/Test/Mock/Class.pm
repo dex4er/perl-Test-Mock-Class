@@ -43,13 +43,15 @@ Its API is inspired by PHP SimpleTest framework.
 
 It isn't tied with L<Test::Builder> so it can be used standalone or with any
 xUnit-like framework, i.e. L<Test::Unit::Lite>.  Look for
-L<Test::Builder::Mock::Class> if you want to use it with L<Test::Builder>
-(L<Test::More> or L<Test::Simple>).
+L<Test::Builder::Mock::Class> if you want to use it with L<Test::More> or
+other L<Test::Builder>-based libraries.
 
 =item *
 
 The API for creating mock classes is based on L<Moose> and L<Class::MOP> so it
 doesn't clash with API of original class and is easy expandable.
+C<Test::Mock::Class> works also with L<Mouse> and then it doesn't require
+compiled XS modules.
 
 =item *
 
@@ -246,14 +248,14 @@ Example code:
 
 =head1 SEE ALSO
 
+Mock classes for L<Test::More>: L<Test::Builder::Mock::Class>.
+
 Mock metaclass API: L<Test::Mock::Class::Role::Meta::Class>,
 L<Moose::Meta::Class>.
 
 Mock object methods: L<Test::Mock::Class::Role::Object>.
 
 xUnit-like testing: L<Test::Unit::Lite>.
-
-Mock classes for L<Test::Builder>: L<Test::Builder::Mock::Class>.
 
 Other implementations: L<Test::MockObject>, L<Test::MockClass>.
 
