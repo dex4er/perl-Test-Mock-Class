@@ -262,35 +262,6 @@ sub _get_mock_superclasses {
 };
 
 
-sub _get_mock_metaclasses {
-    my ($self, $class) = @_;
-
-    return () unless defined $class;
-    return () unless $class->can('meta');
-
-    return (
-        attribute_metaclass => $class->meta->attribute_metaclass,
-        instance_metaclass  => $class->meta->instance_metaclass,
-        method_metaclass    => $class->meta->method_metaclass,
-    );
-};
-
-
-sub _get_mock_metaclass_instance_roles {
-    my ($self, $class) = @_;
-
-    return () unless defined $class;
-    return () unless $class->can('meta');
-
-    my $metaclass_instance = $class->meta->get_meta_instance->meta;
-
-    return () unless $metaclass_instance->can('roles');
-
-    return map { $_->name }
-           @{ $metaclass_instance->roles };
-};
-
-
 no namespace::functions;
 
 1;
