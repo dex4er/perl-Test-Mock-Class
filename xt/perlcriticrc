@@ -5,6 +5,8 @@ verbose = 4
 [ControlStructures::ProhibitCascadingIfElse]
 max_elsif = 5
 
+[-ErrorHandling::RequireCheckingReturnValueOfEval]
+
 [Modules::ProhibitExcessMainComplexity]
 max_mccabe = 30
 
@@ -20,8 +22,8 @@ minimum_regex_length_to_complain_about = 75
 [Subroutines::ProhibitExcessComplexity]
 max_mccabe = 40
 
-[TestingAndDebugging::ProhibitNoStrict]
-allow = vars subs refs
+[-TestingAndDebugging::ProhibitNoStrict]
 
-[TestingAndDebugging::ProhibitNoWarnings]
-allow = 
+[-TestingAndDebugging::ProhibitNoWarnings]
+
+[-ValuesAndExpressions::ProhibitConstantPragma]

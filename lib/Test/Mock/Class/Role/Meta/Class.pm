@@ -78,8 +78,6 @@ has 'mock_constructor_methods_regexp' => (
 use namespace::functions -except => 'meta';
 
 
-## no critic qw(RequireCheckingReturnValueOfEval)
-
 =head1 CONSTRUCTORS
 
 =over

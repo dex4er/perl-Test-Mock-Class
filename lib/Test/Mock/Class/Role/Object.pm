@@ -27,7 +27,6 @@ use Symbol ();
 use Test::Assert ':all';
 
 
-## no critic qw(ProhibitConstantPragma)
 use constant Exception => 'Test::Mock::Class::Exception';
 use English '-no_match_vars';
 
@@ -85,8 +84,6 @@ has '_mock_action' => (
 
 use namespace::functions -except => 'meta';
 
-
-## no critic qw(RequireCheckingReturnValueOfEval)
 
 =head1 METHODS
 
